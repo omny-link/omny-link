@@ -54,7 +54,7 @@ public interface MemoRepository extends CrudRepository<Memo, Long> {
     @Query("SELECT m FROM Memo m WHERE m.tenantId = :tenantId AND m.name = :name AND (status IS NULL OR status != 'deleted')")
     Optional<Memo> findByName(@Param("name") String name,
             @Param("tenantId") String tenantId);
-    
+
     @Override
     @Query("UPDATE #{#entityName} x set x.status = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")
     @Modifying(clearAutomatically = true)

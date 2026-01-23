@@ -44,16 +44,20 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomStockItemFieldDeserializer;
 import link.omny.catalog.model.api.ShortStockItem;
@@ -66,35 +70,25 @@ import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = { "customFields", "sizeString", "stockCategory", "notes", "documents" })
-@ToString(exclude = { "customFields", "sizeString", "stockCategory", "notes", "documents" })
+@EqualsAndHashCode(callSuper = true, exclude = { "customFields", "sizeString",
+    "stockCategory", "notes", "documents" })
+@ToString(exclude = { "customFields", "sizeString", "stockCategory", "notes",
+    "documents" })
 @Entity
-@NamedEntityGraph(name = "stockItemWithAll",
-    attributeNodes = {
-        @NamedAttributeNode(value = "stockCategory", subgraph = "stockCategory-subgraph"),
-        @NamedAttributeNode("customFields"),
-        @NamedAttributeNode("notes"),
-        @NamedAttributeNode("documents")
-    },
-    subgraphs = {
-        @NamedSubgraph(
-                name = "stockCategory-subgraph",
-                attributeNodes = { @NamedAttributeNode("customFields") }
-        )
-    }
-)
+@NamedEntityGraph(name = "stockItemWithAll", attributeNodes = {
+    @NamedAttributeNode(value = "stockCategory", subgraph = "stockCategory-subgraph"),
+    @NamedAttributeNode("customFields"), @NamedAttributeNode("notes"),
+    @NamedAttributeNode("documents") }, subgraphs = {
+        @NamedSubgraph(name = "stockCategory-subgraph", attributeNodes = {
+            @NamedAttributeNode("customFields") }) })
 @Table(name = "OL_STOCK_ITEM")
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true, value = { "stockCategory"})
-public class StockItem extends Auditable<String> implements ShortStockItem, Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true, value = { "stockCategory" })
+public class StockItem extends Auditable<String>
+        implements ShortStockItem, Serializable {
 
     private static final long serialVersionUID = 6825862597448133674L;
 
@@ -108,13 +102,13 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     @SequenceGenerator(name = "stockItemIdSeq", sequenceName = "ol_stock_item_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stockItemIdSeq")
     @JsonProperty
-    @JsonView({OrderViews.Summary.class, StockCategoryViews.Detailed.class,
-            StockItemViews.Summary.class})
+    @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
+        StockItemViews.Summary.class })
     private Long id;
 
     @JsonProperty
     @JsonView({ OrderViews.Summary.class, StockCategoryViews.Detailed.class,
-            StockItemViews.Summary.class })
+        StockItemViews.Summary.class })
     @NotNull
     private String name;
 
@@ -125,34 +119,33 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
 
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class,
-            StockItemViews.Summary.class })
+        StockItemViews.Summary.class })
     private String size;
 
     @JsonProperty
-        @JsonView({ StockCategoryViews.Detailed.class,
-            StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Transient
     private String sizeString;
 
     @JsonProperty
-        @JsonView({ StockCategoryViews.Detailed.class,
-            StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private String unit;
 
     @JsonProperty
     @JsonView(StockItemViews.Summary.class)
     private BigDecimal price;
 
-    /**
-     * Comma separated set of tags for the item.
-     */
+    /** Comma separated set of tags for the item. */
     @JsonProperty
     @JsonView({ StockCategoryViews.Detailed.class,
         StockItemViews.Detailed.class })
     private String tags;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Column(name = "video_code")
     private String videoCode;
 
@@ -162,25 +155,29 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     private String status;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 20)
     @Column(name = "offer_status")
     private String offerStatus;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 35)
     @Column(name = "offer_title")
     private String offerTitle;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 250)
     @Column(name = "offer_desc")
     private String offerDescription;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 30)
     @Column(name = "offer_cta")
     private String offerCallToAction;
@@ -190,7 +187,8 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
      * to on click.
      */
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Column(name = "offer_url")
     private String offerUrl;
 
@@ -217,7 +215,8 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     private Set<Document> documents;
 
     @JsonProperty
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Transient
     // @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy =
     // "stockItem")
@@ -226,7 +225,8 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockItem")
     @JsonDeserialize(using = JsonCustomStockItemFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView({ StockCategoryViews.Detailed.class, StockItemViews.Detailed.class })
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private Set<CustomStockItemField> customFields;
 
     public static final int CURRENCY_SCALE = 2;
@@ -246,8 +246,8 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     }
 
     /**
-     * @deprecated id now exposed directly or access links when wrapped
-     * as EntityModel
+     * @deprecated id now exposed directly or access links when wrapped as
+     *             EntityModel
      */
     @Deprecated
     public String getSelfRef() {
@@ -280,21 +280,21 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     public void addCustomField(CustomStockItemField customField) {
         customField.setStockItem(this);
         if (getCustomFields().contains(customField)) {
-            LOGGER.warn(String
-                    .format("Ignoring request to add %1$s as it already exists in the list",
-                            customField));
+            LOGGER.warn(String.format(
+                    "Ignoring request to add %1$s as it already exists in the list",
+                    customField));
         } else {
             getCustomFields().add(customField);
         }
     }
 
     protected void setCustomField(CustomStockItemField newField) {
-        boolean found = false; 
+        boolean found = false;
         for (CustomStockItemField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
-                found= true;
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
+                found = true;
             }
         }
         if (!found) {
@@ -348,8 +348,7 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
                             "/images/%1$s/%2$s/%3$d.jpg",
                             getStockCategory().getName().toLowerCase()
                                     .replaceAll(" ", "_"),
-                            getPrimeTag().toLowerCase()
-                                    .replaceAll(" ", "_"),
+                            getPrimeTag().toLowerCase().replaceAll(" ", "_"),
                             i + 1)));
                 }
             }
@@ -383,31 +382,33 @@ public class StockItem extends Auditable<String> implements ShortStockItem, Seri
     }
 
     public String toCsv() {
-        StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                        id,
-                        stockCategory == null ? "" : stockCategory.getId(),
-                        name,
-                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
-                        size,
-                        sizeString == null ? "" : CsvUtils.quoteIfNeeded(sizeString),
-                        unit == null ? "" : unit,
-                        price == null ? "" : price,
-                        tags == null ? "" : CsvUtils.quoteIfNeeded(tags),
-                        videoCode == null ? "" : CsvUtils.quoteIfNeeded(videoCode),
-                        status == null ? "Draft" : CsvUtils.quoteIfNeeded(status),
-                        offerStatus == null ? "Draft" : CsvUtils.quoteIfNeeded(offerStatus),
-                        offerTitle == null ? "" : CsvUtils.quoteIfNeeded(offerTitle),
-                        offerDescription == null ? "" : CsvUtils.quoteIfNeeded(offerDescription),
-                        offerCallToAction == null ? "" : CsvUtils.quoteIfNeeded(offerCallToAction),
-                        offerUrl == null ? "" : CsvUtils.quoteIfNeeded(offerUrl),
-                        tenantId, created, lastUpdated));
+        StringBuilder sb = new StringBuilder().append(String.format(
+                "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s", id,
+                stockCategory == null ? "" : stockCategory.getId(), name,
+                description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                size,
+                sizeString == null ? "" : CsvUtils.quoteIfNeeded(sizeString),
+                unit == null ? "" : unit, price == null ? "" : price,
+                tags == null ? "" : CsvUtils.quoteIfNeeded(tags),
+                videoCode == null ? "" : CsvUtils.quoteIfNeeded(videoCode),
+                status == null ? "Draft" : CsvUtils.quoteIfNeeded(status),
+                offerStatus == null ? "Draft"
+                        : CsvUtils.quoteIfNeeded(offerStatus),
+                offerTitle == null ? "" : CsvUtils.quoteIfNeeded(offerTitle),
+                offerDescription == null ? ""
+                        : CsvUtils.quoteIfNeeded(offerDescription),
+                offerCallToAction == null ? ""
+                        : CsvUtils.quoteIfNeeded(offerCallToAction),
+                offerUrl == null ? "" : CsvUtils.quoteIfNeeded(offerUrl),
+                tenantId, created, lastUpdated));
         if (customHeadings == null) {
-            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+            LOGGER.warn(
+                    "No custom headings specified, so only standard fields can be included");
         } else {
             for (String fieldName : customHeadings) {
                 String val = getCustomFieldValue(fieldName);
-                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+                sb.append(',')
+                        .append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
             }
         }
         return sb.toString();

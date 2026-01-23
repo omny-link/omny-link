@@ -27,14 +27,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.xml.bind.annotation.XmlElement;
 
-import org.springframework.hateoas.Link;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-
-import link.omny.supportservices.views.NumberSequenceViews;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.Link;
+
+import link.omny.supportservices.views.NumberSequenceViews;
 
 @Entity
 @Data
@@ -84,7 +83,6 @@ public class NumberSequence {
     }
 
     public void increment() {
-        this.lastUsed = this.getLastUsed() + 1l;        
+        this.lastUsed = this.getLastUsed() + 1l;
     }
-    
 }

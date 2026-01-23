@@ -41,7 +41,7 @@ public class CatalogExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public @ResponseBody String handleDataIntegrityViolationException(
             DataIntegrityViolationException e) {
-         return unwrap(e);
+        return unwrap(e);
     }
 
     private String unwrap(Throwable e) {
@@ -52,5 +52,4 @@ public class CatalogExceptionHandler {
             return String.format("{\"message\":\"%1$s\"}", e.getMessage());
         }
     }
-
 }

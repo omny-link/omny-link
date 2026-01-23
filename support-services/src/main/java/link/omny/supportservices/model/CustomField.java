@@ -22,15 +22,13 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @MappedSuperclass
 @Data
@@ -42,15 +40,13 @@ public class CustomField implements Serializable {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(CustomField.class);
 
-    /**
-     */
+    /** */
     @NotNull
     @JsonProperty
     @Column(nullable = false)
     private String name;
 
-    /**
-     */
+    /** */
     @JsonProperty
     @Size(max = 1000)
     @Column(name = "val")

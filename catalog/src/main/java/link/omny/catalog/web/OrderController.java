@@ -19,7 +19,6 @@ import static java.lang.System.currentTimeMillis;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,6 +29,11 @@ import java.util.Map;
 
 import jakarta.transaction.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,15 +56,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.CatalogException;
 import link.omny.catalog.CatalogObjectNotFoundException;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -78,7 +77,6 @@ import link.omny.supportservices.internal.NullAwareBeanUtils;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
 import link.omny.supportservices.web.NumberSequenceController;
-import lombok.Data;
 
 /**
  * REST web service for accessing stock items.
@@ -122,30 +120,37 @@ public class OrderController {
         Order order = findById(tenantId, orderId);
         LOGGER.info(
                 "Found order with {} order items, {} notes, {} docs and {} feedback",
-                order.getOrderItems().size(),
-                order.getNotes().size(),
+                order.getOrderItems().size(), order.getNotes().size(),
                 order.getDocuments().size(),
                 order.getFeedback() == null ? "WITHOUT" : "WITH");
 
-        order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
+        order.setChildOrders(
+                orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
         return serialise(addLinks(tenantId, order), new HttpHeaders());
     }
 
-    private HttpEntity<String> serialise(EntityModel<Order> entity, HttpHeaders headers) {
+    private HttpEntity<String> serialise(EntityModel<Order> entity,
+            HttpHeaders headers) {
         // Work around issue with Jackson serialisation:
         // If return EntityModel<Order> result is:
-        // Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JS
-        // ON: Cannot override _serializer: had a `link.omny.supportservices.json.JsonCustomFieldSerializer`
-        // , trying to set to `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
+        // Resolved
+        // [org.springframework.http.converter.HttpMessageNotWritableException:
+        // Could not
+        // write JS
+        // ON: Cannot override _serializer: had a
+        // `link.omny.supportservices.json.JsonCustomFieldSerializer`
+        // , trying to set to
+        // `org.springframework.data.rest.webmvc.json.PersistentEntityJackson2Module$Nest
         // edEntitySerializer`]
         try {
             String json = objectMapper.writeValueAsString(entity);
             LOGGER.info("... found: {}", json);
             return new HttpEntity<String>(json, headers);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             @SuppressWarnings("null")
             Long orderId = entity.getContent().getId();
-            LOGGER.error("Unable to serialise account with id {}, cause: {}", orderId, e);
+            LOGGER.error("Unable to serialise account with id {}, cause: {}",
+                    orderId, e);
             throw new BusinessEntityNotFoundException(Order.class, orderId);
         }
     }
@@ -160,12 +165,14 @@ public class OrderController {
             @PathVariable("tenantId") String tenantId,
             @PathVariable("ids") String orderIds) {
         LOGGER.info("Read orders {} for tenant {}", orderIds, tenantId);
-        List<Order> orders = orderRepo.findByIds(tenantId, parseOrderIds(orderIds));
+        List<Order> orders = orderRepo.findByIds(tenantId,
+                parseOrderIds(orderIds));
         for (Order order : orders) {
             LOGGER.info("Found order with {} order items",
                     order.getOrderItems().size());
 
-            order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId, order.getId()));
+            order.setChildOrders(orderRepo.findByParentOrderForTenant(tenantId,
+                    order.getId()));
         }
         return addLinks(tenantId, orders);
     }
@@ -184,9 +191,10 @@ public class OrderController {
                 ids = new Long[1];
                 ids[0] = tree.asLong();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
-            throw new CatalogException(String.format("Unable to parse order ids from %1$s", orderIds));
+            throw new CatalogException(String
+                    .format("Unable to parse order ids from %1$s", orderIds));
         }
         return ids;
     }
@@ -199,8 +207,8 @@ public class OrderController {
     public @ResponseBody Feedback readFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId) {
-        LOGGER.info(
-                "Read feedback for order {} of tenant {}", orderId, tenantId);
+        LOGGER.info("Read feedback for order {} of tenant {}", orderId,
+                tenantId);
 
         Feedback feedback = feedbackRepo.findByOrder(tenantId, orderId);
 
@@ -252,12 +260,14 @@ public class OrderController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        StringBuilder sb = new StringBuilder().append(
-                "id,name,ref,type,description,date,dueDate,stage,price,"
-                + "tax,invoiceRef,owner,contactId,stockItemId,tenantId,"
-                + "created,lastUpdated,notes,documents,");
-        List<String> customFieldNames = orderRepo.findCustomFieldNames(tenantId);
-        LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
+        StringBuilder sb = new StringBuilder()
+                .append("id,name,ref,type,description,date,dueDate,stage,price,"
+                        + "tax,invoiceRef,owner,contactId,stockItemId,tenantId,"
+                        + "created,lastUpdated,notes,documents,");
+        List<String> customFieldNames = orderRepo
+                .findCustomFieldNames(tenantId);
+        LOGGER.info(
+                "Found {} custom field names while exporting orders for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
         for (String fieldName : customFieldNames) {
             sb.append(fieldName).append(",");
@@ -268,13 +278,13 @@ public class OrderController {
             order.setCustomHeadings(customFieldNames);
             sb.append(order.toCsv()).append("\r\n");
         }
-        LOGGER.info("Exporting CSV orders for {} generated {} bytes",
-                tenantId, sb.length());
+        LOGGER.info("Exporting CSV orders for {} generated {} bytes", tenantId,
+                sb.length());
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentLength(sb.length());
-        return new ResponseEntity<String>(
-                sb.toString(), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(sb.toString(), httpHeaders,
+                HttpStatus.OK);
     }
 
     /**
@@ -302,8 +312,7 @@ public class OrderController {
             @PathVariable("contactIds") Long[] contactIds,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(
-                "List orders for contacts {} & tenant {}",
+        LOGGER.info("List orders for contacts {} & tenant {}",
                 Arrays.asList(contactIds), tenantId);
         long start = currentTimeMillis();
 
@@ -312,18 +321,18 @@ public class OrderController {
             list = orderRepo.findAllForContacts(tenantId, contactIds);
         } else {
             Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = orderRepo
-                    .findPageForContacts(tenantId, contactIds, pageable);
+            list = orderRepo.findPageForContacts(tenantId, contactIds,
+                    pageable);
         }
 
-        LOGGER.info("Found {} orders in {}ms", list.size(), (currentTimeMillis() - start));
+        LOGGER.info("Found {} orders in {}ms", list.size(),
+                (currentTimeMillis() - start));
         return addLinks(tenantId, list);
     }
 
     protected Order findById(final String tenantId, final Long id) {
-        return orderRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        Order.class, id));
+        return orderRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Order.class, id));
     }
 
     /**
@@ -342,8 +351,7 @@ public class OrderController {
             list = orderRepo.findByTypeForTenant(tenantId, type);
         } else {
             Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = orderRepo
-                    .findPageByTypeForTenant(tenantId, type, pageable);
+            list = orderRepo.findPageByTypeForTenant(tenantId, type, pageable);
         }
         LOGGER.info("Found {} orders", list.size());
         return addLinks(tenantId, list);
@@ -359,8 +367,7 @@ public class OrderController {
         LOGGER.info("List account funnel for tenant {}", tenantId);
 
         FunnelReport rpt = new FunnelReport();
-        List<Object[]> list = orderRepo
-                .findAllForTenantGroupByStage(tenantId);
+        List<Object[]> list = orderRepo.findAllForTenantGroupByStage(tenantId);
         LOGGER.debug("Found {} stages", list.size());
 
         for (Object[] objects : list) {
@@ -399,8 +406,10 @@ public class OrderController {
             }
             order.setRef(ref);
         }
-        EntityModel<Order> entityModel = addLinks(tenantId, orderRepo.save(order));
-        HttpHeaders headers = headersWithLocation(entityModel.getLink("self").get().toUri());
+        EntityModel<Order> entityModel = addLinks(tenantId,
+                orderRepo.save(order));
+        HttpHeaders headers = headersWithLocation(
+                entityModel.getLink("self").get().toUri());
         return serialise(entityModel, headers);
     }
 
@@ -410,26 +419,25 @@ public class OrderController {
         return headers;
     }
 
-    protected ResponseEntity<Object> getCreatedResponseEntity(String path, Map<String, String> vars) {
-        URI location = MvcUriComponentsBuilder.fromController(getClass()).path(path).buildAndExpand(vars).toUri();
+    protected ResponseEntity<Object> getCreatedResponseEntity(String path,
+            Map<String, String> vars) {
+        URI location = MvcUriComponentsBuilder.fromController(getClass())
+                .path(path).buildAndExpand(vars).toUri();
         HttpHeaders headers = headersWithLocation(location);
         return new ResponseEntity<Object>(headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Update an existing order.
-     */
+    /** Update an existing order. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @PutMapping(value = "/{id}", consumes = { "application/json" })
     @Operation(summary = "Update an existing order")
     @Transactional
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
-            @PathVariable("id") Long orderId,
-            @RequestBody Order updatedOrder) {
+            @PathVariable("id") Long orderId, @RequestBody Order updatedOrder) {
         Order order = findById(tenantId, orderId);
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order,
-                "id", "documents", "notes", "stockItem");
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrder, order, "id",
+                "documents", "notes", "stockItem");
 
         fixUpOrderItems(tenantId, order);
         orderRepo.save(order);
@@ -438,7 +446,8 @@ public class OrderController {
     private void fixUpOrderItems(String tenantId, Order order) {
         LOGGER.debug("fixUpOrderItems for order {} ({}), {} items found",
                 order.getName(), order.getId(),
-                (order.getOrderItems() == null ? 0 : order.getOrderItems().size()));
+                (order.getOrderItems() == null ? 0
+                        : order.getOrderItems().size()));
         short index = 1;
         for (OrderItem item : order.getOrderItems()) {
             if (item.getIndex() == null) {
@@ -454,6 +463,7 @@ public class OrderController {
 
     /**
      * Update an existing order with a new order item.
+     *
      * @return
      */
     @ResponseStatus(value = HttpStatus.CREATED)
@@ -476,41 +486,40 @@ public class OrderController {
         vars.put("tenantId", tenantId);
         vars.put("id", order.getId().toString());
         OrderItem item = order.getOrderItems().stream()
-                .reduce((first, second) -> second).orElseThrow(
-                        () -> new IllegalArgumentException("Unable to add order item"));
+                .reduce((first, second) -> second)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Unable to add order item"));
         vars.put("itemId", item.getId().toString());
 
         return getCreatedResponseEntity("/{id}/order-items/{itemId}", vars);
     }
 
-    /**
-     * Add a document to the specified order.
-     */
+    /** Add a document to the specified order. */
     @PostMapping(value = "/{orderId}/documents")
     @Transactional
     @Operation(summary = "Add a document to the specified order.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("orderId") Long orderId, @RequestBody Document doc) {
-         Order order = findById(tenantId, orderId);
-         order.getDocuments().add(doc);
-         order.setLastUpdated(new Date());
-         order = orderRepo.save(order);
-         doc = order.getDocuments().stream()
-                 .reduce((first, second) -> second).orElse(null);
+        Order order = findById(tenantId, orderId);
+        order.getDocuments().add(doc);
+        order.setLastUpdated(new Date());
+        order = orderRepo.save(order);
+        doc = order.getDocuments().stream().reduce((first, second) -> second)
+                .orElse(null);
 
-         HttpHeaders headers = new HttpHeaders();
-         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
-                 .buildAndExpand(tenantId, order.getId(), doc.getId())
-                 .toUri();
-         headers.setLocation(uri);
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/documents/{docId}")
+                .buildAndExpand(tenantId, order.getId(), doc.getId()).toUri();
+        headers.setLocation(uri);
 
-         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
      * Add a note to the specified order.
+     *
      * @return the created note.
      */
     @PostMapping(value = "/{orderId}/notes")
@@ -523,15 +532,13 @@ public class OrderController {
         order.getNotes().add(note);
         order.setLastUpdated(new Date());
         order = orderRepo.save(order);
-        note = order.getNotes().stream()
-                .reduce((first, second) -> second).orElse(null);
-
+        note = order.getNotes().stream().reduce((first, second) -> second)
+                .orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
                 .path("/{id}/notes/{noteId}")
-                .buildAndExpand(tenantId, order.getId(), note.getId())
-                .toUri();
+                .buildAndExpand(tenantId, order.getId(), note.getId()).toUri();
         headers.setLocation(uri);
 
         return new ResponseEntity<Note>(note, headers, HttpStatus.CREATED);
@@ -539,6 +546,7 @@ public class OrderController {
 
     /**
      * Update an existing order with new feedback.
+     *
      * @return created feedback object.
      */
     @PostMapping(value = "/{id}/feedback", consumes = { "application/json" })
@@ -548,8 +556,7 @@ public class OrderController {
     public @ResponseBody ResponseEntity<Object> addFeedback(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId, @RequestBody Feedback feedback) {
-        LOGGER.debug("Creating feedback on order {} for {}",
-                orderId, tenantId);
+        LOGGER.debug("Creating feedback on order {} for {}", orderId, tenantId);
         feedback.setTenantId(tenantId);
         for (CustomFeedbackField cf : feedback.getCustomFields()) {
             cf.setFeedback(feedback);
@@ -571,9 +578,11 @@ public class OrderController {
 
     /**
      * Update existing order feedback.
+     *
      * @return
      */
-    @PutMapping(value = "/{id}/feedback/{feedbackId}", consumes = { "application/json" })
+    @PutMapping(value = "/{id}/feedback/{feedbackId}", consumes = {
+        "application/json" })
     @Operation(summary = "Update feedback for the specified order.")
     public @ResponseBody ResponseEntity<Object> updateFeedback(
             @PathVariable("tenantId") String tenantId,
@@ -582,12 +591,13 @@ public class OrderController {
             @RequestBody Feedback feedback) {
         Feedback existingFeedback = feedbackRepo.findByOrder(tenantId, orderId);
         if (existingFeedback == null) {
-            throw new BusinessEntityNotFoundException(Feedback.class, feedbackId);
+            throw new BusinessEntityNotFoundException(Feedback.class,
+                    feedbackId);
         } else {
             LOGGER.debug("Updating feedback {} of order {} for {}",
                     existingFeedback.getId(), orderId, tenantId);
-            NullAwareBeanUtils
-                    .copyNonNullProperties(feedback, existingFeedback, "order");
+            NullAwareBeanUtils.copyNonNullProperties(feedback, existingFeedback,
+                    "order");
             feedback = feedbackRepo.save(existingFeedback);
         }
 
@@ -596,25 +606,25 @@ public class OrderController {
         vars.put("id", orderId.toString());
         vars.put("feedbackId", feedback.getId().toString());
 
-        return getCreatedResponseEntity("/{id}/feedback/{feedbackId}",vars);
+        return getCreatedResponseEntity("/{id}/feedback/{feedbackId}", vars);
     }
 
-    /**
-     * Update an existing order item.
-     */
+    /** Update an existing order item. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @PutMapping(value = "/{id}/order-items/{itemId}", consumes = { "application/json" })
+    @PutMapping(value = "/{id}/order-items/{itemId}", consumes = {
+        "application/json" })
     @Operation(summary = "Update an existing order item")
     public @ResponseBody void updateOrderItem(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("id") Long orderId,
             @PathVariable("itemId") Long orderItemId,
             @RequestBody OrderItem updatedOrderItem) {
-        OrderItem item = orderItemRepo.findById(orderItemId)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        OrderItem.class, orderItemId));
+        OrderItem item = orderItemRepo.findById(orderItemId).orElseThrow(
+                () -> new BusinessEntityNotFoundException(OrderItem.class,
+                        orderItemId));
 
-        NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id", "stockItem");
+        NullAwareBeanUtils.copyNonNullProperties(updatedOrderItem, item, "id",
+                "stockItem");
         item.setTenantId(tenantId);
         for (CustomOrderItemField field : item.getCustomFields()) {
             field.setOrderItem(item);
@@ -655,9 +665,7 @@ public class OrderController {
         }
     }
 
-    /**
-     * Delete an existing order.
-     */
+    /** Delete an existing order. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{orderId}", method = RequestMethod.DELETE)
     @Transactional
@@ -667,9 +675,7 @@ public class OrderController {
         orderRepo.deleteById(orderId);
     }
 
-    /**
-     * Delete the specified order item.
-     */
+    /** Delete the specified order item. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}/order-items/{itemId}", method = RequestMethod.DELETE)
     @Transactional
@@ -681,7 +687,8 @@ public class OrderController {
         orderItemRepo.deleteById(orderItemId);
     }
 
-    protected List<EntityModel<Order>> addLinks(final String tenantId, final List<Order> list) {
+    protected List<EntityModel<Order>> addLinks(final String tenantId,
+            final List<Order> list) {
         ArrayList<EntityModel<Order>> entities = new ArrayList<EntityModel<Order>>();
         for (Order order : list) {
             entities.add(addLinks(tenantId, order));
@@ -689,10 +696,13 @@ public class OrderController {
         return entities;
     }
 
-    protected EntityModel<Order> addLinks(final String tenantId, final Order order) {
-        return EntityModel.of(order, linkTo(methodOn(OrderController.class)
-                .findEntityById(tenantId, order.getId()))
-                .withSelfRel());
+    protected EntityModel<Order> addLinks(final String tenantId,
+            final Order order) {
+        return EntityModel
+                .of(order,
+                        linkTo(methodOn(OrderController.class)
+                                .findEntityById(tenantId, order.getId()))
+                                .withSelfRel());
     }
 
     @Data

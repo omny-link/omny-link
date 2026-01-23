@@ -50,5 +50,4 @@ public class GeolocationServiceTest {
 
         assertEquals(17.0d, distance, 0.1);
     }
-
 }

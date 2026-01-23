@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,13 +39,6 @@ import jakarta.validation.constraints.Size;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
-import link.omny.catalog.views.OrderViews;
-import link.omny.supportservices.json.JsonCustomFieldSerializer;
-import link.omny.supportservices.model.Auditable;
-import link.omny.supportservices.model.CustomField;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,6 +47,14 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.core.annotation.RestResource;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+
+import link.omny.catalog.json.JsonCustomOrderItemFieldDeserializer;
+import link.omny.catalog.views.OrderViews;
+import link.omny.supportservices.json.JsonCustomFieldSerializer;
+import link.omny.supportservices.model.Auditable;
+import link.omny.supportservices.model.CustomField;
 
 @Getter
 @Setter
@@ -122,8 +124,8 @@ public class OrderItem extends Auditable<String> implements Serializable {
     }
 
     /**
-     * @deprecated id now exposed directly or access links when wrapped
-     * as EntityModel
+     * @deprecated id now exposed directly or access links when wrapped as
+     *             EntityModel
      */
     @Deprecated
     public String getSelfRef() {
@@ -148,8 +150,8 @@ public class OrderItem extends Auditable<String> implements Serializable {
         boolean found = false;
         for (CustomOrderItemField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
                 found = true;
             }
         }
@@ -180,9 +182,9 @@ public class OrderItem extends Auditable<String> implements Serializable {
         }
         for (CustomOrderItemField field : customFields) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
-                found= true;
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
+                found = true;
             }
         }
         if (!found) {
@@ -205,13 +207,14 @@ public class OrderItem extends Auditable<String> implements Serializable {
         final int prime = 31;
         int result = super.hashCode();
         try {
-        result = prime * result
-                + ((customFields == null) ? 0 : customFields.hashCode());
+            result = prime * result
+                    + ((customFields == null) ? 0 : customFields.hashCode());
         } catch (RuntimeException e) {
             // This seems to happen only when invoking
             // OrderController.findByContacts and appears to be ignorable
             // as custom fields are already in memory
-            LOGGER.error("{} threw {}: {}", id, e.getClass().getName(), e.getMessage());
+            LOGGER.error("{} threw {}: {}", id, e.getClass().getName(),
+                    e.getMessage());
         }
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((price == null) ? 0 : price.hashCode());

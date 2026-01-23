@@ -18,7 +18,6 @@ package link.omny.catalog.internal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 
@@ -38,27 +37,25 @@ public class CatalogCsvImporterTest {
         String content = HEADER_LINE + LF + RECORD_1_LINE + LF;
         List<StockItem> list;
         try {
-            list = new CatalogCsvImporter().readStockItems(new StringReader(
-                    content), content.substring(0, content.indexOf('\n'))
-                    .split(","), TENANT_ID);
-            System.out.println(String.format("  found %1$d stockItems",
-                    list.size()));
+            list = new CatalogCsvImporter().readStockItems(
+                    new StringReader(content),
+                    content.substring(0, content.indexOf('\n')).split(","),
+                    TENANT_ID);
+            System.out.println(
+                    String.format("  found %1$d stockItems", list.size()));
             assertEquals(1, list.size());
 
             // stock item 1
             assertEquals("Studio 101/102", list.get(0).getName());
-            assertEquals("Trumpton", list.get(0).getStockCategory()
-                    .getName());
+            assertEquals("Trumpton", list.get(0).getStockCategory().getName());
             assertEquals("Office", list.get(0).getTags());
             assertEquals("475.000", list.get(0).getSize());
             assertEquals(TENANT_ID, list.get(0).getTenantId());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             fail("Unexpected IO exception: " + e.getMessage());
         }
-
     }
-
 }

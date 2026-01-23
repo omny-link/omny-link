@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,23 +39,20 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.swagger.v3.oas.annotations.Hidden;
 import link.omny.custmgmt.model.Contact;
 import link.omny.custmgmt.model.MemoDistribution;
 import link.omny.custmgmt.repositories.ContactRepository;
 import link.omny.custmgmt.repositories.MemoDistributionRepository;
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 import link.omny.supportservices.model.Note;
-import lombok.Data;
 
 /**
  * REST web service for uploading and accessing a file of JSON Mailshots (over
  * and above the CRUD offered by spring data).
- * 
+ *
  * @author Tim Stephenson
  */
 @Controller
@@ -75,10 +74,10 @@ public class MemoDistributionController {
 
     /**
      * Imports JSON representation of mailshots.
-     * 
+     *
      * <p>
      * This is a handy link: http://shancarter.github.io/mr-data-converter/
-     * 
+     *
      * @param file
      *            A file posted in a multi-part request
      * @return The meta data of the added model
@@ -108,7 +107,7 @@ public class MemoDistributionController {
 
     /**
      * Return just the mailshots for a specific tenant.
-     * 
+     *
      * @return mailshots for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -146,8 +145,10 @@ public class MemoDistributionController {
     public @ResponseBody MemoDistribution getExpandedDistribution(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("distributionId") Long distributionId) {
-        LOGGER.info(String.format("getExpandedDistribution %1$s for tenant %2$s", distributionId, tenantId));
-        
+        LOGGER.info(
+                String.format("getExpandedDistribution %1$s for tenant %2$s",
+                        distributionId, tenantId));
+
         MemoDistribution dist = findById(tenantId, distributionId);
         for (String tag : dist.getRecipientTagList()) {
             List<Contact> list = contactRepo.findByTag("%" + tag + "%",
@@ -157,13 +158,13 @@ public class MemoDistributionController {
             dist.addRecipients(list);
             dist.removeRecipient(tag);
         }
-        
+
         return dist;
     }
 
     /**
      * Export all mailshots for the tenant.
-     * 
+     *
      * @return mailshots for that tenant.
      */
     @RequestMapping(value = "/", method = RequestMethod.GET, produces = "text/csv")
@@ -171,7 +172,8 @@ public class MemoDistributionController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        LOGGER.info(String.format("Export mailshots for tenant %1$s", tenantId));
+        LOGGER.info(
+                String.format("Export mailshots for tenant %1$s", tenantId));
 
         List<MemoDistribution> list;
         if (limit == null) {
@@ -185,30 +187,25 @@ public class MemoDistributionController {
         return list;
     }
 
-    /**
-     * Add a note to the specified mailshot.
-     */
+    /** Add a note to the specified mailshot. */
     @RequestMapping(value = "/{mailshotId}/notes", method = RequestMethod.POST)
-    public @ResponseBody void addNote(
-            @PathVariable("tenantId") String tenantId,
+    public @ResponseBody void addNote(@PathVariable("tenantId") String tenantId,
             @PathVariable("mailshotId") Long mailshotId,
             @RequestParam("author") String author,
             @RequestParam("content") String content) {
         addNote(tenantId, mailshotId, new Note(author, content));
     }
 
-    /**
-     * Add a note to the specified mailshot.
-     */
+    /** Add a note to the specified mailshot. */
     // TODO Jackson cannot deserialise document because of mailshot reference
     // @RequestMapping(value = "/{mailshotId}/notes", method =
     // RequestMethod.PUT)
-    public @ResponseBody void addNote(
-            @PathVariable("tenantId") String tenantId,
-            @PathVariable("mailshotId") Long mailshotId, @RequestBody Note note) {
+    public @ResponseBody void addNote(@PathVariable("tenantId") String tenantId,
+            @PathVariable("mailshotId") Long mailshotId,
+            @RequestBody Note note) {
         MemoDistribution mailshot = findById(tenantId, mailshotId);
         // note.setMailshot(mailshot);
-//        noteRepo.save(note);
+        // noteRepo.save(note);
         // necessary to force a save
         mailshot.setLastUpdated(new Date());
         mailshotRepo.save(mailshot);
@@ -228,8 +225,7 @@ public class MemoDistributionController {
 
     protected List<EntityModel<MemoDistribution>> addLinks(
             final String tenantId, final List<MemoDistribution> list) {
-        List<EntityModel<MemoDistribution>> entities
-                = new ArrayList<EntityModel<MemoDistribution>>();
+        List<EntityModel<MemoDistribution>> entities = new ArrayList<EntityModel<MemoDistribution>>();
         for (MemoDistribution MemoDistribution : list) {
             entities.add(addLinks(tenantId, MemoDistribution));
         }
@@ -241,6 +237,6 @@ public class MemoDistributionController {
         return EntityModel.of(memoDistribution,
                 linkTo(methodOn(MemoDistributionController.class)
                         .findById(tenantId, memoDistribution.getId()))
-                                .withSelfRel());
+                        .withSelfRel());
     }
 }

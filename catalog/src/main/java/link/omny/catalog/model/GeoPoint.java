@@ -16,14 +16,12 @@
 package link.omny.catalog.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * A tuple to hold latitude and longitude of a location.
- *
  *
  * @author Tim Stephenson
  */
@@ -37,5 +35,4 @@ public class GeoPoint {
 
     @JsonProperty
     private double lng;
-
 }

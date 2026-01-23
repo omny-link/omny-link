@@ -20,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.UnsupportedEncodingException;
 
+import com.knowprocess.pdf.PdfTestApplication;
+import com.knowprocess.pdf.web.PdfController;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,14 +32,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import com.knowprocess.pdf.PdfTestApplication;
-import com.knowprocess.pdf.web.PdfController;
-
 /**
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = PdfTestApplication.class)
+@SpringBootTest(classes = PdfTestApplication.class, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 @WebAppConfiguration
 public class PdfControllerTest {
 
@@ -49,9 +49,9 @@ public class PdfControllerTest {
     @BeforeAll
     public static void setUpClass() {
         Html2PdfService svc = new Html2PdfService();
-        htmlIn = svc.getClasspathResource("/docs/testHtml2Pdf.html");        
+        htmlIn = svc.getClasspathResource("/docs/testHtml2Pdf.html");
     }
-    
+
     @Test
     public void testHtml2Pdf() throws UnsupportedEncodingException {
         ResponseEntity<byte[]> entity = svc.transformToPdf("test.pdf", htmlIn);
@@ -59,5 +59,4 @@ public class PdfControllerTest {
         byte[] pdf = entity.getBody();
         assertNotNull(pdf);
     }
-
 }

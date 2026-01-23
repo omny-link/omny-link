@@ -49,8 +49,7 @@ public class CustomAccountRepository {
     protected Specification<Account> isTenant(String tenantId) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
-            return criteriaBuilder
-                .equal(root.get("tenantId"), tenantId);
+            return criteriaBuilder.equal(root.get("tenantId"), tenantId);
         };
     }
 
@@ -76,8 +75,7 @@ public class CustomAccountRepository {
         }
 
         LOGGER.info("Found {} {} accounts in {}ms", list.size(), tenantId,
-                (System.currentTimeMillis()-start));
+                (System.currentTimeMillis() - start));
         return list;
     }
-
 }

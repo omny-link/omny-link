@@ -23,15 +23,21 @@ import link.omny.supportservices.model.Activity;
 @RepositoryRestResource(exported = false)
 public interface ActivityRepository extends CrudRepository<Activity, Long> {
 
-//    @Query("SELECT a FROM Activity a WHERE a.account.id = :accountId ORDER BY a.lastUpdated ASC")
-//    List<Activity> findByAccountId(@Param("accountId") Long accountId);
+    // @Query("SELECT a FROM Activity a WHERE a.account.id = :accountId ORDER BY
+    // a.lastUpdated
+    // ASC")
+    // List<Activity> findByAccountId(@Param("accountId") Long accountId);
 
-//    @Query("SELECT a FROM Activity a WHERE a.contact.id = :contactId ORDER BY a.lastUpdated ASC")
-//    List<Activity> findByContactId(@Param("contactId") Long contactId);
+    // @Query("SELECT a FROM Activity a WHERE a.contact.id = :contactId ORDER BY
+    // a.lastUpdated
+    // ASC")
+    // List<Activity> findByContactId(@Param("contactId") Long contactId);
 
-//    @Query("UPDATE #{#entityName} x set x.contact = :newContact where x.contact = :oldContact")
-//    @Modifying(clearAutomatically = true)
-//    public void updateContact(@Param("oldContact") Contact oldContact,
-//            @Param("newContact") Contact newContact);
+    // @Query("UPDATE #{#entityName} x set x.contact = :newContact where
+    // x.contact =
+    // :oldContact")
+    // @Modifying(clearAutomatically = true)
+    // public void updateContact(@Param("oldContact") Contact oldContact,
+    // @Param("newContact") Contact newContact);
 
 }

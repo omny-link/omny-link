@@ -31,15 +31,10 @@ public class JsEnvironmentController {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(JsEnvironmentController.class);
 
-    public static final String ENV = "var $env = (function () {\n" +
-            "  var me = {\n" +
-            "    appName: '%1$s',\n" +
-            "    server: '%2$s',\n" +
-            "    tagLine: '%3$s'\n" +
-            "  };\n" +
-            "\n" +
-            "  return me;\n" +
-            "}());\n";
+    public static final String ENV = "var $env = (function () {\n"
+            + "  var me = {\n" + "    appName: '%1$s',\n"
+            + "    server: '%2$s',\n" + "    tagLine: '%3$s'\n" + "  };\n"
+            + "\n" + "  return me;\n" + "}());\n";
 
     @Value("${spring.application.name:CRM}")
     protected String appName;
@@ -65,9 +60,7 @@ public class JsEnvironmentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "text/javascript");
         return new ResponseEntity<String>(
-                String.format(ENV, appName, getRestBaseUri(), tagLine),
-                headers,
+                String.format(ENV, appName, getRestBaseUri(), tagLine), headers,
                 HttpStatus.OK);
     }
-
 }

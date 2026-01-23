@@ -43,15 +43,19 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.catalog.json.JsonCustomStockCategoryFieldDeserializer;
 import link.omny.catalog.model.api.ShortStockCategory;
@@ -63,37 +67,24 @@ import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Entity
-@NamedEntityGraph(name = "stockCategoryWithAll",
-    attributeNodes = {
-        @NamedAttributeNode(value = "stockItems", subgraph = "item-subgraph"),
-        @NamedAttributeNode("customFields"),
-        @NamedAttributeNode("notes"),
-        @NamedAttributeNode("documents")
-    },
-    subgraphs = {
-        @NamedSubgraph(
-                name = "item-subgraph",
-                attributeNodes = { @NamedAttributeNode("customFields") }
-        )
-    }
-)
+@NamedEntityGraph(name = "stockCategoryWithAll", attributeNodes = {
+    @NamedAttributeNode(value = "stockItems", subgraph = "item-subgraph"),
+    @NamedAttributeNode("customFields"), @NamedAttributeNode("notes"),
+    @NamedAttributeNode("documents") }, subgraphs = {
+        @NamedSubgraph(name = "item-subgraph", attributeNodes = {
+            @NamedAttributeNode("customFields") }) })
 @Table(name = "OL_STOCK_CAT")
-@SecondaryTable(name = "OL_STOCK_CAT_CUSTOM",
-    pkJoinColumns = @PrimaryKeyJoinColumn(name = "stock_cat_id"))
+@SecondaryTable(name = "OL_STOCK_CAT_CUSTOM", pkJoinColumns = @PrimaryKeyJoinColumn(name = "stock_cat_id"))
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = "tags")
 @ToString(exclude = { "description", "stockItems" })
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class StockCategory extends Auditable<String> implements ShortStockCategory, Serializable {
+public class StockCategory extends Auditable<String>
+        implements ShortStockCategory, Serializable {
 
     public static final int DEFAULT_IMAGE_COUNT = 8;
 
@@ -107,82 +98,98 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
     @SequenceGenerator(name = "stockCategoryIdSeq", sequenceName = "ol_stock_cat_id_seq", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stockCategoryIdSeq")
     @JsonProperty
-    @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Summary.class,
+        StockItemViews.Detailed.class })
     private Long id;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Summary.class,
+        StockItemViews.Detailed.class })
     @NotNull
     private String name;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 1500)
     private String description;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 60)
     private String address1;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 60)
     private String address2;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 60)
     private String town;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 60)
     @Column(name = "county_or_city")
     private String countyOrCity;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 10)
     @Column(name = "post_code")
     private String postCode;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private String country;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private Double lat;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private Double lng;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Transient
     private String tags;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Column(name = "map_url")
     private String mapUrl;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 1000)
     @Column(name = "directions_by_road")
     private String directionsByRoad;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 1000)
     @Column(name = "directions_by_public_transport")
     private String directionsByPublicTransport;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     @Size(max = 1000)
     @Column(name = "directions_by_air")
     private String directionsByAir;
@@ -193,16 +200,19 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
     private String videoCode;
 
     @JsonProperty
-    @JsonView({StockCategoryViews.Summary.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Summary.class,
+        StockItemViews.Detailed.class })
     @Size(max = 20)
     private String status;
 
     /**
-     * A relative or absolute URL to a product sheet or brochure page, often a PDF.
+     * A relative or absolute URL to a product sheet or brochure page, often a
+     * PDF.
      */
     @JsonProperty
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
-    @Column(name="product_sheet")
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
+    @Column(name = "product_sheet")
     private String productSheetUrl;
 
     @JsonProperty
@@ -268,7 +278,8 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory")
     @JsonDeserialize(using = JsonCustomStockCategoryFieldDeserializer.class)
     @JsonSerialize(using = JsonCustomFieldSerializer.class)
-    @JsonView({StockCategoryViews.Detailed.class, StockItemViews.Detailed.class})
+    @JsonView({ StockCategoryViews.Detailed.class,
+        StockItemViews.Detailed.class })
     private Set<CustomStockCategoryField> customFields;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "stockCategory", targetEntity = StockItem.class)
@@ -316,8 +327,8 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
         boolean found = false;
         for (CustomStockCategoryField field : getCustomFields()) {
             if (field.getName().equals(newField.getName())) {
-                field.setValue(newField.getValue() == null ? null : newField
-                        .getValue().toString());
+                field.setValue(newField.getValue() == null ? null
+                        : newField.getValue().toString());
                 found = true;
             }
         }
@@ -331,9 +342,10 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
         if (images == null || images.size() == 0) {
             images = new ArrayList<MediaResource>(DEFAULT_IMAGE_COUNT);
             for (int i = 0; i < DEFAULT_IMAGE_COUNT; i++) {
-                images.add(new MediaResource(getTenantId(), String.format(
-                        "/images/%1$s/%2$d.jpg",
-                        name.toLowerCase().replaceAll(" ", "_"), i + 1)));
+                images.add(new MediaResource(getTenantId(),
+                        String.format("/images/%1$s/%2$d.jpg",
+                                name.toLowerCase().replaceAll(" ", "_"),
+                                i + 1)));
             }
         }
         return images;
@@ -366,7 +378,6 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
                         tags.add(tag);
                     }
                 }
-
             }
         }
 
@@ -414,39 +425,47 @@ public class StockCategory extends Auditable<String> implements ShortStockCatego
     }
 
     public String toCsv() {
-        StringBuilder sb = new StringBuilder()
-                .append(String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                        id,
-                        name,
-                        description == null ? "" : CsvUtils.quoteIfNeeded(description),
-                        address1 == null ? "" : CsvUtils.quoteIfNeeded(address1),
-                        address2 == null ? "" : CsvUtils.quoteIfNeeded(address2),
-                        town == null ? "" : CsvUtils.quoteIfNeeded(town),
-                        countyOrCity == null ? "" : CsvUtils.quoteIfNeeded(countyOrCity),
-                        postCode == null ? "" : CsvUtils.quoteIfNeeded(postCode),
-                        country == null ? "" : CsvUtils.quoteIfNeeded(country),
-                        lat == null ? "" : lat,
-                        lng == null ? "" : lng,
-                        tags == null ? "" : CsvUtils.quoteIfNeeded(tags),
-                        mapUrl == null ? "" : CsvUtils.quoteIfNeeded(mapUrl),
-                        directionsByRoad == null ? "" : CsvUtils.quoteIfNeeded(directionsByRoad),
-                        directionsByPublicTransport == null ? "" : CsvUtils.quoteIfNeeded(directionsByPublicTransport),
-                        directionsByAir == null ? "" : CsvUtils.quoteIfNeeded(directionsByAir),
-                        videoCode == null ? "" : CsvUtils.quoteIfNeeded(videoCode),
-                        status == null ? "Draft" : CsvUtils.quoteIfNeeded(status),
-                        productSheetUrl == null ? "" : CsvUtils.quoteIfNeeded(productSheetUrl),
-                        offerStatus == null ? "Draft" : CsvUtils.quoteIfNeeded(offerStatus),
-                        offerTitle == null ? "" : CsvUtils.quoteIfNeeded(offerTitle),
-                        offerDescription == null ? "" : CsvUtils.quoteIfNeeded(offerDescription),
-                        offerCallToAction == null ? "" : CsvUtils.quoteIfNeeded(offerCallToAction),
-                        offerUrl == null ? "" : CsvUtils.quoteIfNeeded(offerUrl),
-                        tenantId, created, lastUpdated));
+        StringBuilder sb = new StringBuilder().append(String.format(
+                "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                id, name,
+                description == null ? "" : CsvUtils.quoteIfNeeded(description),
+                address1 == null ? "" : CsvUtils.quoteIfNeeded(address1),
+                address2 == null ? "" : CsvUtils.quoteIfNeeded(address2),
+                town == null ? "" : CsvUtils.quoteIfNeeded(town),
+                countyOrCity == null ? ""
+                        : CsvUtils.quoteIfNeeded(countyOrCity),
+                postCode == null ? "" : CsvUtils.quoteIfNeeded(postCode),
+                country == null ? "" : CsvUtils.quoteIfNeeded(country),
+                lat == null ? "" : lat, lng == null ? "" : lng,
+                tags == null ? "" : CsvUtils.quoteIfNeeded(tags),
+                mapUrl == null ? "" : CsvUtils.quoteIfNeeded(mapUrl),
+                directionsByRoad == null ? ""
+                        : CsvUtils.quoteIfNeeded(directionsByRoad),
+                directionsByPublicTransport == null ? ""
+                        : CsvUtils.quoteIfNeeded(directionsByPublicTransport),
+                directionsByAir == null ? ""
+                        : CsvUtils.quoteIfNeeded(directionsByAir),
+                videoCode == null ? "" : CsvUtils.quoteIfNeeded(videoCode),
+                status == null ? "Draft" : CsvUtils.quoteIfNeeded(status),
+                productSheetUrl == null ? ""
+                        : CsvUtils.quoteIfNeeded(productSheetUrl),
+                offerStatus == null ? "Draft"
+                        : CsvUtils.quoteIfNeeded(offerStatus),
+                offerTitle == null ? "" : CsvUtils.quoteIfNeeded(offerTitle),
+                offerDescription == null ? ""
+                        : CsvUtils.quoteIfNeeded(offerDescription),
+                offerCallToAction == null ? ""
+                        : CsvUtils.quoteIfNeeded(offerCallToAction),
+                offerUrl == null ? "" : CsvUtils.quoteIfNeeded(offerUrl),
+                tenantId, created, lastUpdated));
         if (customHeadings == null) {
-            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+            LOGGER.warn(
+                    "No custom headings specified, so only standard fields can be included");
         } else {
             for (String fieldName : customHeadings) {
                 String val = getCustomFieldValue(fieldName);
-                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+                sb.append(',')
+                        .append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
             }
         }
         return sb.toString();

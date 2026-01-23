@@ -23,15 +23,15 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import link.omny.catalog.model.StockCategory;
-import link.omny.catalog.model.StockItem;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+
+import link.omny.catalog.model.StockCategory;
+import link.omny.catalog.model.StockItem;
 
 public class CatalogCsvImporter {
 
@@ -65,7 +65,8 @@ public class CatalogCsvImporter {
                 for (PropertyDescriptor pd : propertyDescriptors) {
                     LOGGER.debug("  " + pd.getName());
                     if (record.isMapped(pd.getName())) {
-                        setField(stockItem, pd, record.get(pd.getName()).trim());
+                        setField(stockItem, pd,
+                                record.get(pd.getName()).trim());
                     }
                 }
 
@@ -74,8 +75,8 @@ public class CatalogCsvImporter {
                     LOGGER.debug("  " + name);
                     if (record.isMapped(name)) {
                         try {
-                            setField(stockItem.getStockCategory(), pd, record
-                                    .get(name).trim());
+                            setField(stockItem.getStockCategory(), pd,
+                                    record.get(name).trim());
                         } catch (NullPointerException e) {
                             LOGGER.error("Unable to set {} on {}", name,
                                     stockItem.getStockCategory());
@@ -104,9 +105,8 @@ public class CatalogCsvImporter {
 
         } catch (IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            LOGGER.error(String.format("Error parsing CSV into %1$s", bean
-                    .getClass().getName()));
+            LOGGER.error(String.format("Error parsing CSV into %1$s",
+                    bean.getClass().getName()));
         }
     }
-
 }

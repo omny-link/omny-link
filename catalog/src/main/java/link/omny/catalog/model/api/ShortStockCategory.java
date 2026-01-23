@@ -50,6 +50,6 @@ public interface ShortStockCategory {
     Date getCreated();
 
     Date getLastUpdated();
-    
+
     Set<? extends ShortStockItem> getStockItems();
 }

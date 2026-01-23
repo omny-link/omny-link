@@ -25,14 +25,13 @@ import java.util.Scanner;
 
 import jakarta.validation.constraints.NotNull;
 
+import lombok.NoArgsConstructor;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import lombok.NoArgsConstructor;
 
 @Component
 @NoArgsConstructor
@@ -55,7 +54,8 @@ public class ContactAvatarService {
     @SuppressWarnings("resource")
     protected String getTemplate() {
         if (template == null) {
-            try (InputStream is = getClass().getResourceAsStream("/initials.svg")) {
+            try (InputStream is = getClass()
+                    .getResourceAsStream("/initials.svg")) {
                 template = new Scanner(is).useDelimiter("\\A").next();
             } catch (IOException e) {
                 ;
@@ -65,7 +65,8 @@ public class ContactAvatarService {
     }
 
     public File create(String initials) throws Exception {
-        File file = new File(outputDir, initials==null?"unknown.png":initials.toLowerCase() + ".png");
+        File file = new File(outputDir, initials == null ? "unknown.png"
+                : initials.toLowerCase() + ".png");
         create(initials, new FileOutputStream(file));
         return file;
     }

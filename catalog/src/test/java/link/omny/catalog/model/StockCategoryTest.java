@@ -27,20 +27,19 @@ public class StockCategoryTest {
     @Test
     public void testMergeCustomFields() {
         StockCategory stockCategory = new StockCategory();
-        CustomStockCategoryField field1 = new CustomStockCategoryField(
-                "field1", "foo");
+        CustomStockCategoryField field1 = new CustomStockCategoryField("field1",
+                "foo");
         field1.setId(1l);
         stockCategory.addCustomField(field1);
 
-        CustomStockCategoryField field2 = new CustomStockCategoryField(
-                "field1", "foo");
+        CustomStockCategoryField field2 = new CustomStockCategoryField("field1",
+                "foo");
         assertNull(field2.getId());
-        
-        stockCategory.setCustomFields(Collections.singleton(field2));
-        
-        assertEquals(1, stockCategory.getCustomFields().size());
-        assertEquals(field1.getId(), stockCategory.getCustomFields().iterator().next()
-                .getId());
-    }
 
+        stockCategory.setCustomFields(Collections.singleton(field2));
+
+        assertEquals(1, stockCategory.getCustomFields().size());
+        assertEquals(field1.getId(),
+                stockCategory.getCustomFields().iterator().next().getId());
+    }
 }

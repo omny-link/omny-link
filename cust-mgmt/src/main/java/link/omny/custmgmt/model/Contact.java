@@ -52,16 +52,20 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedDate;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
 
 import link.omny.custmgmt.json.CustomBooleanDeserializer;
 import link.omny.custmgmt.json.JsonCustomContactFieldDeserializer;
@@ -75,24 +79,15 @@ import link.omny.supportservices.model.Auditable;
 import link.omny.supportservices.model.CustomField;
 import link.omny.supportservices.model.Document;
 import link.omny.supportservices.model.Note;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 @Entity
 // Don't be tempted to try to write an entity graph to load contact will all
 // children. There is too much to be performant.
-@NamedEntityGraph(name = "contactWithAccount",
-    attributeNodes = {
-            @NamedAttributeNode(value = "account"),
-            @NamedAttributeNode("customFields"),
-    }
-)
+@NamedEntityGraph(name = "contactWithAccount", attributeNodes = {
+    @NamedAttributeNode(value = "account"),
+    @NamedAttributeNode("customFields"), })
 @Table(name = "OL_CONTACT")
-@SecondaryTable(name = "OL_CONTACT_CUSTOM",
-    pkJoinColumns = @PrimaryKeyJoinColumn(name = "contact_id"))
+@SecondaryTable(name = "OL_CONTACT_CUSTOM", pkJoinColumns = @PrimaryKeyJoinColumn(name = "contact_id"))
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = true, exclude = { "account" })
@@ -129,9 +124,7 @@ public class Contact extends Auditable<String> implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
-    /**
-     * Whether this is the primary contact for an account.
-     */
+    /** Whether this is the primary contact for an account. */
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
     @Column(name = "main_contact")
@@ -315,52 +308,40 @@ public class Contact extends Auditable<String> implements Serializable {
     @Column(name = "source")
     private String source;
 
-    /**
-     * In order to allow both Analytics source and a client declared one.
-     */
+    /** In order to allow both Analytics source and a client declared one. */
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
     @Column(name = "source2")
     private String source2;
 
-    /**
-     * Intended to capture the medium of the lead from Analytics.
-     */
+    /** Intended to capture the medium of the lead from Analytics. */
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
     @Size(max = 30)
     @Column(name = "medium")
     private String medium;
 
-    /**
-     * Intended to capture the campaign of the lead from Analytics.
-     */
+    /** Intended to capture the campaign of the lead from Analytics. */
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
     @Size(max = 30)
     @Column(name = "campaign")
     private String campaign;
 
-    /**
-     * Intended to capture the keyword of the lead from Analytics.
-     */
+    /** Intended to capture the keyword of the lead from Analytics. */
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
     @Size(max = 30)
     @Column(name = "keyword")
     private String keyword;
 
-    /**
-     * Comma-separated set of alerts for the contact.
-     */
+    /** Comma-separated set of alerts for the contact. */
     @JsonProperty
     @JsonView({ ContactViews.Detailed.class })
     @Column(name = "alerts")
     private String alerts;
 
-    /**
-     * Comma-separated set of arbitrary tags for the contact.
-     */
+    /** Comma-separated set of arbitrary tags for the contact. */
     @JsonProperty
     @JsonView({ ContactViews.Summary.class })
     @Column(name = "tags")
@@ -369,6 +350,7 @@ public class Contact extends Auditable<String> implements Serializable {
     /**
      * The time the contact is created.
      *
+     * <p>
      * Generally this field is managed by the application but this is not
      * rigidly enforced as exceptions such as data migration do exist.
      */
@@ -635,7 +617,6 @@ public class Contact extends Auditable<String> implements Serializable {
     private Date getNow() {
         if (now == null) {
             now = new Date();
-
         }
         return now;
     }
@@ -769,8 +750,8 @@ public class Contact extends Auditable<String> implements Serializable {
         try {
             for (Activity act : getActivities()) {
                 if (type.toString().equalsIgnoreCase(act.getType())
-                        && (lastAct == null
-                        || lastAct.getOccurred().before(act.getOccurred()))) {
+                        && (lastAct == null || lastAct.getOccurred()
+                                .before(act.getOccurred()))) {
                     lastAct = act;
                 }
             }
@@ -787,8 +768,8 @@ public class Contact extends Auditable<String> implements Serializable {
         try {
             for (Activity act : getActivities()) {
                 if (type.toString().equalsIgnoreCase(act.getType())
-                        && (firstAct == null
-                        || firstAct.getOccurred().after(act.getOccurred()))) {
+                        && (firstAct == null || firstAct.getOccurred()
+                                .after(act.getOccurred()))) {
                     firstAct = act;
                 }
             }
@@ -839,64 +820,49 @@ public class Contact extends Auditable<String> implements Serializable {
     }
 
     public String toCsv() {
-        StringBuilder sb = new StringBuilder() ;
+        StringBuilder sb = new StringBuilder();
         sb.append(String.format(
                 "%1$d,%2$d,%3$s,%4$s,%5$s,%6$b,%7$s,%8$s,%9$s,%10$s,"
-                + "%11$s,%12$s,%13$s,%14$s,%15$s,%16$b,%17$s,%18$s,%19$s,"
-                + "%20$s,%21$s,%22$s,%23$s,%24$s,%25$s,%26$b,%27$s,%28$s,%29$s,"
-                + "%30$s,%31$s,%32$s,%33$s,%34$b,%35$s,%36$s,%37$s,%38$s,%39$s,"
-                + "%40$s,%41$s,%42$s,%43$s",
-                getId(),
-                getAccountId(),
-                getFirstName(),
-                getLastName(),
-                title == null ? "" : title,
-                isMainContact(),
+                        + "%11$s,%12$s,%13$s,%14$s,%15$s,%16$b,%17$s,%18$s,%19$s,"
+                        + "%20$s,%21$s,%22$s,%23$s,%24$s,%25$s,%26$b,%27$s,%28$s,%29$s,"
+                        + "%30$s,%31$s,%32$s,%33$s,%34$b,%35$s,%36$s,%37$s,%38$s,%39$s,"
+                        + "%40$s,%41$s,%42$s,%43$s",
+                getId(), getAccountId(), getFirstName(), getLastName(),
+                title == null ? "" : title, isMainContact(),
                 address1 == null ? "" : CsvUtils.quoteIfNeeded(address1),
                 address2 == null ? "" : CsvUtils.quoteIfNeeded(address2),
                 town == null ? "" : town,
                 countyOrCity == null ? "" : countyOrCity,
                 country == null ? "" : country,
-                postCode == null ? "" : postCode,
-                email == null ? "" : email,
+                postCode == null ? "" : postCode, email == null ? "" : email,
                 // isMailConfirmed(),
-                jobTitle == null ? "" : jobTitle,
-                phone1 == null ? "" : phone1,
-                phone2 == null ? "" : phone2,
-                owner == null ? "" : owner,
+                jobTitle == null ? "" : jobTitle, phone1 == null ? "" : phone1,
+                phone2 == null ? "" : phone2, owner == null ? "" : owner,
                 stage == null ? "" : stage,
                 stageReason == null ? "" : stageReason,
                 stageDate == null ? "" : stageDate,
                 enquiryType == null ? "" : enquiryType,
-                accountType == null ? "" : accountType,
-                isExistingCustomer(),
-                source == null ? "" : source,
-                medium == null ? "" : medium,
+                accountType == null ? "" : accountType, isExistingCustomer(),
+                source == null ? "" : source, medium == null ? "" : medium,
                 campaign == null ? "" : campaign,
-                keyword == null ? "" : keyword,
-                isDoNotCall(),
-                isDoNotEmail(),
+                keyword == null ? "" : keyword, isDoNotCall(), isDoNotEmail(),
                 getTags() == null ? "" : CsvUtils.quoteIfNeeded(getTags()),
-                getUuid(),
-                twitter == null ? "" : twitter,
+                getUuid(), twitter == null ? "" : twitter,
                 linkedIn == null ? "" : linkedIn,
                 facebook == null ? "" : facebook,
                 // getSkype(),
-                tenantId,
-                firstContact == null ? "" : firstContact,
-                getLastUpdated(),
-                getTimeSinceLogin(),
-                getTimeSinceFirstLogin(),
-                getTimeSinceRegistered(),
-                getTimeSinceEmail(),
-                getConsolidatedNotes(),
-                getConsolidatedDocuments()));
+                tenantId, firstContact == null ? "" : firstContact,
+                getLastUpdated(), getTimeSinceLogin(), getTimeSinceFirstLogin(),
+                getTimeSinceRegistered(), getTimeSinceEmail(),
+                getConsolidatedNotes(), getConsolidatedDocuments()));
         if (customHeadings == null) {
-            LOGGER.warn("No custom headings specified, so only standard fields can be included");
+            LOGGER.warn(
+                    "No custom headings specified, so only standard fields can be included");
         } else {
             for (String fieldName : customHeadings) {
                 String val = getCustomFieldValue(fieldName);
-                sb.append(',').append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
+                sb.append(',')
+                        .append(val == null ? "" : CsvUtils.quoteIfNeeded(val));
             }
         }
         return sb.toString();
@@ -905,9 +871,8 @@ public class Contact extends Auditable<String> implements Serializable {
     private String getConsolidatedNotes() {
         StringBuffer sb = new StringBuffer();
         for (Note note : getNotes()) {
-            sb.append(String.format("%s %s: %s;",
-                    note.getCreated(), note.getAuthor(),
-                    note.getContent()));
+            sb.append(String.format("%s %s: %s;", note.getCreated(),
+                    note.getAuthor(), note.getContent()));
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
     }
@@ -915,8 +880,8 @@ public class Contact extends Auditable<String> implements Serializable {
     private String getConsolidatedDocuments() {
         StringBuffer sb = new StringBuffer();
         for (Document doc : getDocuments()) {
-            sb.append(String.format("%s %s: %s %s;",
-                    doc.getCreated(), doc.getAuthor(), doc.getName(), doc.getUrl()));
+            sb.append(String.format("%s %s: %s %s;", doc.getCreated(),
+                    doc.getAuthor(), doc.getName(), doc.getUrl()));
         }
         return CsvUtils.quoteIfNeeded(sb.toString());
     }
@@ -924,5 +889,4 @@ public class Contact extends Auditable<String> implements Serializable {
     public boolean isDeleted() {
         return DELETED.equalsIgnoreCase(stage);
     }
-
 }

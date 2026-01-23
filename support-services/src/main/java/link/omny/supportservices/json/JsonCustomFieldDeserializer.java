@@ -15,36 +15,28 @@
  ******************************************************************************/
 package link.omny.supportservices.json;
 
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ValueDeserializer;
 
 import link.omny.supportservices.model.CustomField;
 
-/**
- */
-public class JsonCustomFieldDeserializer<T> extends
-        JsonDeserializer<Set<? extends CustomField>> {
+/** */
+public class JsonCustomFieldDeserializer<T>
+        extends ValueDeserializer<Set<? extends CustomField>> {
 
     @Override
     public Set<? extends CustomField> deserialize(JsonParser jp,
-            DeserializationContext ctxt) throws IOException,
-            JsonProcessingException {
+            DeserializationContext ctxt) {
         Set<CustomField> set = new HashSet<CustomField>();
-        ObjectCodec oc = jp.getCodec();
-        JsonNode node = oc.readTree(jp);
+        JsonNode node = jp.readValueAsTree();
 
-        for (Iterator<Entry<String, JsonNode>> it = node.fields(); it.hasNext();) {
-            Entry<String, JsonNode> entry = it.next();
+        for (Entry<String, JsonNode> entry : node.properties()) {
             // if (!FIELDS.contains(entry.getKey())) {
             set.add((CustomField) newInstance(entry));
             // }

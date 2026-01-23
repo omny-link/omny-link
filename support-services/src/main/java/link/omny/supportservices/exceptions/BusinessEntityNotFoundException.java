@@ -55,5 +55,4 @@ public class BusinessEntityNotFoundException extends RuntimeException {
     public String getId() {
         return id.toString();
     }
-
 }

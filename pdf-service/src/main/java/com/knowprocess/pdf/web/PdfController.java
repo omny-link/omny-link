@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
+import com.knowprocess.pdf.services.Html2PdfService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowprocess.pdf.services.Html2PdfService;
-
 @RestController
 public class PdfController {
 
@@ -41,18 +40,19 @@ public class PdfController {
     @Autowired
     protected Html2PdfService html2PdfService;
 
-    @PostMapping(value = "/pdfs/{fileName}.pdf", consumes = { MediaType.TEXT_HTML_VALUE }, 
-            produces = MediaType.APPLICATION_PDF_VALUE)
+    @PostMapping(value = "/pdfs/{fileName}.pdf", consumes = {
+        MediaType.TEXT_HTML_VALUE }, produces = MediaType.APPLICATION_PDF_VALUE)
     public final ResponseEntity<byte[]> transformToPdf(
             @PathVariable("fileName") String fileName,
             @RequestBody String htmlIn) throws UnsupportedEncodingException {
         htmlIn = URLDecoder.decode(htmlIn, "UTF-8");
         LOGGER.info("transformToPdf to {}, received {}...", fileName,
-                (htmlIn != null && htmlIn.length() > 50 ? htmlIn.substring(0, 50) : htmlIn));
+                (htmlIn != null && htmlIn.length() > 50
+                        ? htmlIn.substring(0, 50)
+                        : htmlIn));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         html2PdfService.execute(htmlIn, baos);
-        
+
         return new ResponseEntity<byte[]>(baos.toByteArray(), HttpStatus.OK);
     }
-
 }

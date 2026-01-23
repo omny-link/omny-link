@@ -15,13 +15,13 @@
  ******************************************************************************/
 package link.omny.custmgmt.web;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.containsString;
 
 import java.io.IOException;
 import java.util.Date;
@@ -40,9 +40,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.custmgmt.Application;
 import link.omny.custmgmt.model.Account;
@@ -55,7 +54,8 @@ import link.omny.supportservices.model.Note;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Application.class, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 @WebAppConfiguration
 public class ContactAndAccountControllerTest {
 
@@ -81,8 +81,8 @@ public class ContactAndAccountControllerTest {
     public void tearDown() {
         contactController.delete(tenantId, contactId);
         // check clean
-        List<EntityModel<Contact>> list = contactController.listForTenantAsJson(
-                tenantId, 0, 100, false);
+        List<EntityModel<Contact>> list = contactController
+                .listForTenantAsJson(tenantId, 0, 100, false);
         assertEquals(0, list.size());
     }
 
@@ -95,8 +95,8 @@ public class ContactAndAccountControllerTest {
         Account acct = getAccount();
         Long acctId = assertAccountCreation(acct);
 
-        contactController.setAccount(tenantId, contactId, "/accounts/"
-                + acctId);
+        contactController.setAccount(tenantId, contactId,
+                "/accounts/" + acctId);
 
         Contact contactRetrieved = retrieveContact(tenantId, contact.getId());
         assertContactEquals(contact, acct, contactRetrieved);
@@ -110,15 +110,16 @@ public class ContactAndAccountControllerTest {
         contactController.update(tenantId, contactId, contact2);
         Contact contact3 = retrieveContact(tenantId, contactId);
         assertNotNull(contact3);
-        assertNotNull(contact3.getAccount(), "Update has de-linked contact and account");
+        assertNotNull(contact3.getAccount(),
+                "Update has de-linked contact and account");
         assertEquals(acct.getName(), contact3.getAccount().getName());
         assertTrue(contact3.getLastUpdated().after(contact2.getLastUpdated()));
         assertEquals(contact3.getNotes().size(), contact.getNotes().size());
         assertEquals(1, contact3.getActivities().size());
 
         // FETCH ALL CONTACTS
-        List<EntityModel<Contact>> contacts = contactController.listForTenantAsJson(
-                tenantId, 0, 100, false);
+        List<EntityModel<Contact>> contacts = contactController
+                .listForTenantAsJson(tenantId, 0, 100, false);
         assertEquals(1, contacts.size());
         // assertContactEquals(contact, acct, contacts);
 
@@ -128,13 +129,15 @@ public class ContactAndAccountControllerTest {
     }
 
     private void assertExportAccountsAsCsv(Account acct) {
-        ResponseEntity<String> entity = acctController.listForTenantAsCsv(tenantId, 0, 10);
+        ResponseEntity<String> entity = acctController
+                .listForTenantAsCsv(tenantId, 0, 10);
         String csv = entity.getBody();
         System.out.println(csv);
     }
 
     private void assertExportContactsAsCsv(Contact contact) {
-        ResponseEntity<String> entity = contactController.listForTenantAsCsv(tenantId, 0, 10);
+        ResponseEntity<String> entity = contactController
+                .listForTenantAsCsv(tenantId, 0, 10);
         String csv = entity.getBody();
         assertNotNull(csv);
         String[] lines = csv.split("\n");
@@ -153,9 +156,10 @@ public class ContactAndAccountControllerTest {
         assertEquals(1, locationHdrs.size());
         assertNotNull(locationHdrs.get(0));
         // TODO
-//        assertThat(locationHdrs.get(0), containsString(TENANT_ID + "/accounts/"));
-        Long acctId = Long.parseLong(locationHdrs.get(0).substring(
-                locationHdrs.get(0).lastIndexOf('/') + 1));
+        // assertThat(locationHdrs.get(0), containsString(TENANT_ID +
+        // "/accounts/"));
+        Long acctId = Long.parseLong(locationHdrs.get(0)
+                .substring(locationHdrs.get(0).lastIndexOf('/') + 1));
         return acctId;
     }
 
@@ -168,9 +172,10 @@ public class ContactAndAccountControllerTest {
         assertEquals(1, locationHdrs.size());
         assertNotNull(locationHdrs.get(0));
         // TODO migrate to http://host/tenant/contacts/id
-        // assertThat(locationHdrs.get(0), containsString(TENANT_ID + "/contacts/"));
-        contactId = Long.parseLong(locationHdrs.get(0).substring(
-                locationHdrs.get(0).lastIndexOf('/') + 1));
+        // assertThat(locationHdrs.get(0), containsString(TENANT_ID +
+        // "/contacts/"));
+        contactId = Long.parseLong(locationHdrs.get(0)
+                .substring(locationHdrs.get(0).lastIndexOf('/') + 1));
         assertNotNull(contactId);
         return contactId;
     }
@@ -189,13 +194,14 @@ public class ContactAndAccountControllerTest {
         Contact contact = getContact();
         Long contactId = assertContactCreation(contact);
 
-        contactController.setAccount(tenantId, contactId, "/accounts/"
-                + acctId);
+        contactController.setAccount(tenantId, contactId,
+                "/accounts/" + acctId);
 
         Account acct2 = acctController.findById(tenantId, acctId);
         String json = objectMapper.writeValueAsString(acct2);
         assertNotNull(json);
-        assertThat("Json must contain the expected custom field", json.contains("\"budget\":"));
+        assertThat("Json must contain the expected custom field",
+                json.contains("\"budget\":"));
         acct2.setAliases("trading as");
         acctController.update(tenantId, acctId, acct2);
 
@@ -232,8 +238,8 @@ public class ContactAndAccountControllerTest {
         List<String> locationHdrs = contactResp.getHeaders().get("Location");
         assertEquals(1, locationHdrs.size());
         assertNotNull(locationHdrs.get(0));
-        contactId = Long.parseLong(locationHdrs.get(0).substring(
-                locationHdrs.get(0).lastIndexOf('/') + 1));
+        contactId = Long.parseLong(locationHdrs.get(0)
+                .substring(locationHdrs.get(0).lastIndexOf('/') + 1));
 
         Contact retrievedContact = retrieveContact(tenantId, contact.getId());
         assertContactEquals(contact, acct, retrievedContact);
@@ -248,8 +254,8 @@ public class ContactAndAccountControllerTest {
         contactController.update(tenantId, contactId, contact);
 
         // CHECK UPDATED CONTACT
-        List<EntityModel<Contact>> contactList = contactController.findByEmail(tenantId,
-                contact.getEmail());
+        List<EntityModel<Contact>> contactList = contactController
+                .findByEmail(tenantId, contact.getEmail());
         assertEquals(1, contactList.size());
         assertContactEquals(contact, acct, contactList.get(0).getContent());
 
@@ -265,38 +271,41 @@ public class ContactAndAccountControllerTest {
         assertEquals(contact.getStage(), contactResults.getStage());
         assertNull(contactResults.getStage());
         assertEquals(1, contactResults.getCustomFields().size());
-        assertEquals("blue",
-                contactResults.getCustomFieldValue("eyeColor"));
+        assertEquals("blue", contactResults.getCustomFieldValue("eyeColor"));
         assertEquals(tenantId, contactResults.getAccount().getTenantId());
         assertEquals(acct.getName(), contactResults.getAccount().getName());
         // NOTE audit columns are not populated in this test harness.
     }
 
     protected Contact getContact() throws IOException {
-        return new Contact()
-                .setFirstName("Fred")
-                .setLastName("Flintstone")
+        return new Contact().setFirstName("Fred").setLastName("Flintstone")
                 .setEmail("fred@bedrockslateandgravel.com")
                 .addCustomField(new CustomContactField("eyeColor", "blue"))
                 .addNote(new Note(AUTHOR, "Creating new prospect"))
-                .setTenantId("client1"); // Should be replaced with TENANT_ID
+                .setTenantId("client1"); // Should be
+        // replaced
+        // with
+        // TENANT_ID
     }
 
     protected Account getAccount() throws IOException {
-        return new Account()
-                .setName("trademark")
-                .setDescription("test")
+        return new Account().setName("trademark").setDescription("test")
                 .addNote(new Note(AUTHOR, "Creating new prospect"))
                 .addCustomField(new CustomAccountField("budget", "5000"))
-                .setTenantId("client1"); // Should be replaced with TENANT_ID
+                .setTenantId("client1"); // Should be
+        // replaced
+        // with
+        // TENANT_ID
     }
 
     private Contact retrieveContact(String tenantId, Long contactId) {
-        LOGGER.info("Attempting to retrieve contact {} for {}", contactId, tenantId);
-        String body = contactController.findEntityById(tenantId, contactId).getBody();
+        LOGGER.info("Attempting to retrieve contact {} for {}", contactId,
+                tenantId);
+        String body = contactController.findEntityById(tenantId, contactId)
+                .getBody();
         try {
             return objectMapper.readValue(body, Contact.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             LOGGER.error("cannot deserialise: {}", body);
             fail("unable to deserialise contact", e);
         }

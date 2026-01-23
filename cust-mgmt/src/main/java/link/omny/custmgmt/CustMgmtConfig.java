@@ -18,7 +18,7 @@ package link.omny.custmgmt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -46,15 +46,14 @@ public class CustMgmtConfig {
         // Set a custom ObjectMapper if Jackson customization is needed
         // factory.setObjectMapper(…);
         if (skipPopulator) {
-            LOGGER.warn("Configured to skip repository population, change this by setting populator.skip=false in application.properties");
+            LOGGER.warn(
+                    "Configured to skip repository population, change this by setting populator.skip=false in application.properties");
             factory.setResources(new Resource[0]);
         } else {
-            factory.setResources(new Resource[] { new ClassPathResource(
-                    "data.json") });
+            factory.setResources(
+                    new Resource[] { new ClassPathResource("data.json") });
         }
 
         return factory;
     }
-
 }
-

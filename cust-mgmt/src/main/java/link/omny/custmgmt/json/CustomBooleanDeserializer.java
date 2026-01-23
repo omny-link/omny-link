@@ -15,27 +15,24 @@
  ******************************************************************************/
 package link.omny.custmgmt.json;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-
-public class CustomBooleanDeserializer extends JsonDeserializer<Boolean> {
+public class CustomBooleanDeserializer extends ValueDeserializer<Boolean> {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(CustomBooleanDeserializer.class);
     protected static final Class<?> _valueClass = Boolean.class;
 
     @Override
-    public Boolean deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-            JsonProcessingException {
+    public Boolean deserialize(JsonParser jp, DeserializationContext ctxt)
+            throws JacksonException {
         LOGGER.info("deserialize boolean from json");
-        JsonToken t = jp.getCurrentToken();
+        JsonToken t = jp.currentToken();
         if (t == JsonToken.VALUE_TRUE) {
             return Boolean.TRUE;
         }
@@ -56,11 +53,11 @@ public class CustomBooleanDeserializer extends JsonDeserializer<Boolean> {
             if ("false".equals(text) || text.length() == 0) {
                 return Boolean.FALSE;
             }
-        
+
             if ("N".equalsIgnoreCase(text) || text.length() == 0) {
                 return Boolean.FALSE;
             }
-        
+
             if ("Y".equalsIgnoreCase(text)) {
                 return Boolean.TRUE;
             }
@@ -77,5 +74,4 @@ public class CustomBooleanDeserializer extends JsonDeserializer<Boolean> {
         ctxt.handleUnexpectedToken(_valueClass, jp);
         return Boolean.FALSE;
     }
-
 }

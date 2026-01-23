@@ -33,8 +33,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 
@@ -42,6 +41,7 @@ import link.omny.supportservices.exceptions.BusinessEntityNotFoundException;
 public class AppExceptionHandler {
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(AppExceptionHandler.class);
+
     @Autowired
     @Qualifier("objectMapper")
     private ObjectMapper mapper;
@@ -52,10 +52,9 @@ public class AppExceptionHandler {
             ConstraintViolationException e) throws IOException {
         LOGGER.error("Constraint violation: " + e.getMessage());
         StringWriter sw = new StringWriter();
-        for (Iterator<ConstraintViolation<?>> it = e
-                .getConstraintViolations().iterator(); it.hasNext();) {
-            ConstraintViolation<?> cv = (ConstraintViolation<?>) it
-                    .next();
+        for (Iterator<ConstraintViolation<?>> it = e.getConstraintViolations()
+                .iterator(); it.hasNext();) {
+            ConstraintViolation<?> cv = (ConstraintViolation<?>) it.next();
             mapper.writeValue(sw, cv.getMessage());
             if (it.hasNext()) {
                 sw.append(',');
@@ -84,7 +83,8 @@ public class AppExceptionHandler {
     @ExceptionHandler(HttpClientErrorException.class)
     public @ResponseBody String handleProcessGatewayException(
             HttpClientErrorException e) {
-        LOGGER.error("Upstream responded {}: {}", e.getStatusCode(), e.getStatusText());
+        LOGGER.error("Upstream responded {}: {}", e.getStatusCode(),
+                e.getStatusText());
         LOGGER.error("Response body: {}", e.getResponseBodyAsString());
         return e.getMessage();
     }

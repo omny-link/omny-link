@@ -29,8 +29,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import link.omny.catalog.model.StockCategory;
 
 @RepositoryRestResource(exported = false)
-public interface StockCategoryRepository extends
-        CrudRepository<StockCategory, Long> {
+public interface StockCategoryRepository
+        extends CrudRepository<StockCategory, Long> {
 
     @Override
     @EntityGraph(value = "stockCategoryWithAll")

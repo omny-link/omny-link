@@ -46,21 +46,20 @@ public class CustomContactRepository {
 
     @Transactional
     public Contact findById(final String tenantId, final Long contactId) {
-        Contact contact = contactRepo.findById(contactId)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        Contact.class, contactId));
+        Contact contact = contactRepo.findById(contactId).orElseThrow(
+                () -> new BusinessEntityNotFoundException(Contact.class,
+                        contactId));
         LOGGER.debug(String.format(
                 "force load child entities, activities: %1$d, docs: %2$d, notes: %3$d",
-                contact.getActivities().size(),
-                contact.getDocuments().size(), contact.getNotes().size()));
+                contact.getActivities().size(), contact.getDocuments().size(),
+                contact.getNotes().size()));
         if (contact.getAccount() != null) {
-                LOGGER.debug(String.format(
-                        "force load acct child entities, "
-                        + "custom fields %1$s, activities: %2$d, docs: %3$d, notes: %4$d",
-                        contact.getAccount().getCustomFields().size(),
-                        contact.getAccount().getActivities().size(),
-                        contact.getAccount().getDocuments().size(),
-                        contact.getAccount().getNotes().size()));
+            LOGGER.debug(String.format("force load acct child entities, "
+                    + "custom fields %1$s, activities: %2$d, docs: %3$d, notes: %4$d",
+                    contact.getAccount().getCustomFields().size(),
+                    contact.getAccount().getActivities().size(),
+                    contact.getAccount().getDocuments().size(),
+                    contact.getAccount().getNotes().size()));
         }
         return contact;
     }
@@ -78,8 +77,7 @@ public class CustomContactRepository {
     protected Specification<Contact> isTenant(String tenantId) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
-            return criteriaBuilder
-                .equal(root.get("tenantId"), tenantId);
+            return criteriaBuilder.equal(root.get("tenantId"), tenantId);
         };
     }
 
@@ -87,10 +85,12 @@ public class CustomContactRepository {
         long start = System.currentTimeMillis();
         LOGGER.info("List contacts for tenant {}", tenantId);
 
-        List<Contact> list = contactRepo.findAll(
-                isTenant(tenantId)
-                        .and((stageIsUnspecified().or(isNotDeleted()))),
-                pageable).getContent();
+        List<Contact> list = contactRepo
+                .findAll(
+                        isTenant(tenantId)
+                                .and((stageIsUnspecified().or(isNotDeleted()))),
+                        pageable)
+                .getContent();
 
         LOGGER.info("Found {} {} contacts in {}ms", list.size(), tenantId,
                 (System.currentTimeMillis() - start));
@@ -98,9 +98,8 @@ public class CustomContactRepository {
     }
 
     private List<Long> findPageByTenant(String tenantId, Pageable pageable) {
-        TypedQuery<Long> q = entityManager.createQuery(
-                ContactRepository.FIND_ID_FOR_TENANT,
-                Long.class);
+        TypedQuery<Long> q = entityManager
+                .createQuery(ContactRepository.FIND_ID_FOR_TENANT, Long.class);
         q.setParameter("tenantId", tenantId);
         q.setFirstResult((int) pageable.getOffset());
         q.setMaxResults(pageable.getPageSize());

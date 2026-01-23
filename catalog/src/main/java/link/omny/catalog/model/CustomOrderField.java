@@ -26,15 +26,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-import org.springframework.data.rest.core.annotation.RestResource;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.CustomField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import link.omny.supportservices.model.CustomField;
 
 @Entity
 @Table(name = "OL_ORDER_CUSTOM")
@@ -61,5 +60,4 @@ public class CustomOrderField extends CustomField {
     public CustomOrderField(String key, String object) {
         super(key, object);
     }
-
 }

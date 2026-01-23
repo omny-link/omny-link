@@ -21,14 +21,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.core.io.Resource;
-import org.springframework.data.repository.init.Jackson2ResourceReader;
+import org.springframework.data.repository.init.JacksonResourceReader;
 import org.springframework.data.repository.init.RepositoryPopulator;
 import org.springframework.data.repository.init.ResourceReader;
 import org.springframework.data.repository.init.ResourceReaderRepositoryPopulator;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.util.Assert;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public class JsonPopulatorFactoryBean extends
         AbstractFactoryBean<ResourceReaderRepositoryPopulator> implements
@@ -43,7 +42,7 @@ public class JsonPopulatorFactoryBean extends
     /**
      * Configures the {@link Resource}s to be used to load objects from and
      * initialize the repositories eventually.
-     * 
+     *
      * @param resources
      *            must not be {@literal null}.
      */
@@ -53,7 +52,6 @@ public class JsonPopulatorFactoryBean extends
     }
 
     /**
-     * 
      * @see org.springframework.context.ApplicationContextAware#setApplicationContext
      *      (org.springframework.context.ApplicationContext)
      */
@@ -88,7 +86,6 @@ public class JsonPopulatorFactoryBean extends
     }
 
     /**
-     * 
      * @see org.springframework.context.ApplicationListener#onApplicationEvent(org
      *      .springframework.context.ApplicationEvent)
      */
@@ -103,7 +100,7 @@ public class JsonPopulatorFactoryBean extends
 
     /**
      * Configures the {@link ObjectMapper} to be used.
-     * 
+     *
      * @param mapper
      */
     public void setMapper(ObjectMapper mapper) {
@@ -111,11 +108,11 @@ public class JsonPopulatorFactoryBean extends
     }
 
     /**
-     * 
      * @see org.springframework.data.repository.init.
      *      AbstractRepositoryPopulatorFactoryBean#getResourceReader()
      */
     protected ResourceReader getResourceReader() {
-        return new Jackson2ResourceReader(mapper);
+        // Use Spring Data's JacksonResourceReader which supports Jackson 3
+        return new JacksonResourceReader(mapper);
     }
 }

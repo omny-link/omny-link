@@ -45,7 +45,7 @@ public class DateFormatter {
     }
 
     public String toString(String source, String pattern) {
-        if (source == null || source.trim().length()==0) {
+        if (source == null || source.trim().length() == 0) {
             return "";
         }
         try {

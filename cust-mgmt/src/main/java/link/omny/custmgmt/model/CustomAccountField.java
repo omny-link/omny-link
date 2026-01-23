@@ -28,12 +28,12 @@ import jakarta.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.CustomField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import link.omny.supportservices.model.CustomField;
 
 @Entity
 @Table(name = "OL_ACCOUNT_CUSTOM")
@@ -60,5 +60,4 @@ public class CustomAccountField extends CustomField {
     public CustomAccountField(String key, String value) {
         super(key, value);
     }
-
 }

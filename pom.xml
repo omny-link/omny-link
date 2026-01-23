@@ -1,14 +1,16 @@
-﻿<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <name>Omny Link Root</name>
   <groupId>link.omny</groupId>
   <artifactId>omny-link-root</artifactId>
-  <packaging>pom</packaging>
-  <inceptionYear>2015</inceptionYear>
   <version>3.1.10-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <inceptionYear>2015</inceptionYear>
 
   <organization>
     <name>Omny Link</name>
@@ -18,21 +20,37 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.3.2</version>
-    <relativePath/> <!-- lookup parent from repository -->
+    <version>4.0.1</version>
+    <relativePath/>
+    <!-- lookup parent from repository -->
   </parent>
 
-  <properties>
-    <batik.version>1.16</batik.version>
-    <jasmine-boot.version>1.1.0</jasmine-boot.version>
-    <java.version>17</java.version>
-    <kp-icons.version>3.1.0</kp-icons.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <omny-link.version>${project.version}</omny-link.version>
-    <plantuml.version>8059</plantuml.version>
-    <spring.version>6.1.5</spring.version>
-    <spring-boot.version>3.3.2</spring-boot.version>
-  </properties>
+  <licenses>
+    <license>
+      <name>Apache v2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>catalog</module>
+    <module>crm-server</module>
+    <module>cust-mgmt</module>
+    <module>docs</module>
+    <module>pdf-service</module>
+    <module>support-services</module>
+  </modules>
+
+  <scm>
+    <url>git@github.com:omny-link/omny-link.git</url>
+    <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
+    <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/omny-link/omny-link/issues</url>
+  </issueManagement>
 
   <distributionManagement>
     <repository>
@@ -42,60 +60,20 @@
     </repository>
   </distributionManagement>
 
-  <licenses>
-    <license>
-      <name>Apache v2.0</name>
-      <url>https://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
-
-  <issueManagement>
-    <system>Github</system>
-    <url>https://github.com/omny-link/omny-link/issues</url>
-  </issueManagement>
-
-  <scm>
-    <url>git@github.com:omny-link/omny-link.git</url>
-    <connection>scm:git:git@github.com:omny-link/omny-link.git</connection>
-    <developerConnection>scm:git:git@github.com:omny-link/omny-link.git</developerConnection>
-  </scm>
-
-	<repositories>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-    <repository>
-      <id>kp-mvn-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-    <pluginRepository>
-      <id>kp-plugin-repo</id>
-      <url>https://knowprocess.com/maven/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
+  <properties>
+    <batik.version>1.16</batik.version>
+    <commons-csv.version>1.11.0</commons-csv.version>
+    <commons-io.version>2.14.0</commons-io.version>
+    <jasmine-boot.version>1.1.0</jasmine-boot.version>
+    <java.version>21</java.version>
+    <jsoup.version>1.18.1</jsoup.version>
+    <kp-icons.version>3.1.0</kp-icons.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <omny-link.version>${project.version}</omny-link.version>
+    <plantuml.version>8059</plantuml.version>
+    <spring.version>7.0.0</spring.version>
+    <spring-boot.version>4.0.1</spring-boot.version>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -141,7 +119,7 @@
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-      <version>2.4.0</version>
+      <version>3.0.1</version>
     </dependency>
 
     <dependency>
@@ -166,29 +144,110 @@
     </dependency>
 
     <dependency>
-      <artifactId>jakarta.xml.bind-api</artifactId>
       <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
 
   </dependencies>
 
-  <modules>
-    <module>catalog</module>
-    <module>crm-server</module>
-    <module>cust-mgmt</module>
-    <module>docs</module>
-    <module>pdf-service</module>
-    <module>support-services</module>
-  </modules>
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+    </repository>
+    <repository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>kp-mvn-repo</id>
+      <url>https://knowprocess.com/maven/</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <id>kp-plugin-repo</id>
+      <url>https://knowprocess.com/maven/</url>
+      <layout>default</layout>
+    </pluginRepository>
+  </pluginRepositories>
 
   <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh-external</artifactId>
-        <version>1.0-beta-6</version>
-      </extension>
-    </extensions>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>org.openrewrite.maven</groupId>
+          <artifactId>rewrite-maven-plugin</artifactId>
+          <version>5.43.0</version>
+          <configuration>
+            <exportDatatables>true</exportDatatables>
+            <activeRecipes>
+              <recipe>org.openrewrite.java.migrate.UpgradeToJava21</recipe>
+              <recipe>org.openrewrite.java.migrate.jakarta.JavaxMigrationToJakarta</recipe>
+              <recipe>org.openrewrite.java.jackson.UpgradeJackson2_3</recipe>
+            </activeRecipes>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.openrewrite.recipe</groupId>
+              <artifactId>rewrite-migrate-java</artifactId>
+              <version>2.26.1</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>2.43.0</version>
+          <configuration>
+            <java>
+              <removeUnusedImports/>
+              <formatAnnotations/>
+              <importOrder>
+                <order>\#,java,jakarta,javax,,link.omny</order>
+              </importOrder>
+              <eclipse>
+                <version>4.26</version>
+                <file>${maven.multiModuleProjectDirectory}/.eclipse-formatter.xml</file>
+              </eclipse>
+              <toggleOffOn />
+            </java>
+            <pom>
+              <includes>
+                <include>pom.xml</include>
+              </includes>
+            </pom>
+          </configuration>
+          <executions>
+            <execution>
+              <phase>verify</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
 
     <plugins>
       <plugin>
@@ -208,14 +267,13 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.7</version>
+        <version>0.8.12</version>
         <executions>
           <execution>
             <goals>
               <goal>prepare-agent</goal>
             </goals>
           </execution>
-          <!-- attach to Maven test phase -->
           <execution>
             <id>report</id>
             <phase>test</phase>
@@ -256,14 +314,13 @@
         </executions>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-      </plugins>
-    </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh-external</artifactId>
+        <version>1.0-beta-6</version>
+      </extension>
+    </extensions>
   </build>
 
   <profiles>
@@ -293,14 +350,6 @@
             <groupId>com.github.jeluard</groupId>
             <artifactId>plantuml-maven-plugin</artifactId>
             <version>${plantuml-maven-plugin.version}</version>
-            <executions>
-              <execution>
-                <phase>process-resources</phase>
-                <goals>
-                  <goal>generate</goal>
-                </goals>
-              </execution>
-            </executions>
             <configuration>
               <sourceFiles>
                 <directory>${basedir}</directory>
@@ -319,6 +368,14 @@
                 <version>${plantuml.version}</version>
               </dependency>
             </dependencies>
+            <executions>
+              <execution>
+                <phase>process-resources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>

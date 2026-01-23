@@ -36,19 +36,20 @@ import org.junit.jupiter.api.Timeout;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.server.web.JsEnvironmentController;
 
-@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 public class RestApiTest {
 
     @LocalServerPort
     private String port;
 
-    private static ScheduledExecutorService globalScheduledThreadPool = Executors.newScheduledThreadPool(20);
+    private static ScheduledExecutorService globalScheduledThreadPool = Executors
+            .newScheduledThreadPool(20);
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -59,13 +60,13 @@ public class RestApiTest {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/custmgmt/specs/AcctMgmtSpec.js" );
+                "classpath:META-INF/resources/webjars/custmgmt/specs/AcctMgmtSpec.js");
 
         JsonNode report = runScript(sb);
         assertEquals(16, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
-        System.out.println(
-                "Account suite took " + (System.currentTimeMillis() - start) + " (ms)");
+        System.out.println("Account suite took "
+                + (System.currentTimeMillis() - start) + " (ms)");
     }
 
     @Test
@@ -75,13 +76,13 @@ public class RestApiTest {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/custmgmt/specs/ContactMgmtSpec.js" );
+                "classpath:META-INF/resources/webjars/custmgmt/specs/ContactMgmtSpec.js");
 
         JsonNode report = runScript(sb);
         assertEquals(14, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
-        System.out.println(
-                "Contact suite took " + (System.currentTimeMillis() - start) + " (ms)");
+        System.out.println("Contact suite took "
+                + (System.currentTimeMillis() - start) + " (ms)");
     }
 
     @Test
@@ -90,29 +91,31 @@ public class RestApiTest {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/custmgmt/specs/MemoSpec.js" );
+                "classpath:META-INF/resources/webjars/custmgmt/specs/MemoSpec.js");
 
         JsonNode report = runScript(sb);
         assertEquals(9, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
-        System.out.println(
-                " Memo suite took " + (System.currentTimeMillis() - start) + " (ms)");
+        System.out.println(" Memo suite took "
+                + (System.currentTimeMillis() - start) + " (ms)");
     }
 
-//    @Test
-//    @Timeout(value = 15, unit = TimeUnit.SECONDS)
-//    public void testAutomationApi() throws IOException {
-//        long start = System.currentTimeMillis();
-//        StringBuilder sb = createScript(
-//                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
-//                "classpath:META-INF/resources/webjars/process-automation/specs/ProcessAutomationSpec.js" );
-//
-//        JsonNode report = runScript(sb);
-//        assertEquals(6, report.get("suite").get("totalSpecsDefined").asInt());
-//        assertNoFailedExpectations(report);
-//        System.out.println(
-//                " Memo suite took " + (System.currentTimeMillis() - start) + " (ms)");
-//    }
+    // @Test
+    // @Timeout(value = 15, unit = TimeUnit.SECONDS)
+    // public void testAutomationApi() throws IOException {
+    // long start = System.currentTimeMillis();
+    // StringBuilder sb = createScript(
+    // "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
+    //
+    // "classpath:META-INF/resources/webjars/process-automation/specs/ProcessAutomationSpec.js"
+    // );
+    //
+    // JsonNode report = runScript(sb);
+    // assertEquals(6, report.get("suite").get("totalSpecsDefined").asInt());
+    // assertNoFailedExpectations(report);
+    // System.out.println(
+    // " Memo suite took " + (System.currentTimeMillis() - start) + " (ms)");
+    // }
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.SECONDS)
@@ -121,20 +124,20 @@ public class RestApiTest {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
                 "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/rest-helper.js",
-                "classpath:META-INF/resources/webjars/catalog/specs/OrderSpec.js" );
+                "classpath:META-INF/resources/webjars/catalog/specs/OrderSpec.js");
 
         JsonNode report = runScript(sb);
         assertEquals(12, report.get("suite").get("totalSpecsDefined").asInt());
         assertNoFailedExpectations(report);
-        System.out.println(
-                "Order suite took " + (System.currentTimeMillis() - start) + " (ms)");
-
+        System.out.println("Order suite took "
+                + (System.currentTimeMillis() - start) + " (ms)");
     }
-    
+
     private void assertNoFailedExpectations(JsonNode report) {
-        for (Iterator<JsonNode> it = report.get("results").elements() ; it.hasNext() ; ) {
+        for (Iterator<JsonNode> it = report.get("results").iterator(); it
+                .hasNext();) {
             JsonNode result = (JsonNode) it.next();
-            System.out.println(result.get("fullName")+" = "+result);
+            System.out.println(result.get("fullName") + " = " + result);
             assertEquals(0, result.get("failedExpectations").size(),
                     "Spec failed: " + result.get("fullName").asText());
         }
@@ -149,7 +152,8 @@ public class RestApiTest {
             String report = (String) bindings.get("report");
             return objectMapper.readTree(report);
         } catch (Throwable e) {
-            System.err.println(String.format("%1$s:%2$s", e.getClass().getName(), e.getMessage()));
+            System.err.println(String.format("%1$s:%2$s",
+                    e.getClass().getName(), e.getMessage()));
             e.printStackTrace();
             fail();
             return null;
@@ -157,28 +161,36 @@ public class RestApiTest {
     }
 
     private void loadPolyfills(StringBuilder sb) {
-        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/timer-polyfill.js\");\n");
-        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/xml-http-request-polyfill.js\");\n");
+        sb.append(
+                "load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/timer-polyfill.js\");\n");
+        sb.append(
+                "load(\"classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/xml-http-request-polyfill.js\");\n");
     }
 
     private void loadAppEnvironment(StringBuilder sb) {
-        sb.append(String.format(JsEnvironmentController.ENV, "test", ("http://localhost:" + port), "Just testing"));
+        sb.append(String.format(JsEnvironmentController.ENV, "test",
+                ("http://localhost:" + port), "Just testing"));
     }
 
     private void loadReporter(StringBuilder sb) {
-        sb.append(String.format("load(\"%1$s\");", "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/json-reporter.js"));
+        sb.append(String.format("load(\"%1$s\");",
+                "classpath:META-INF/resources/webjars/jasmine-boot/1.1.0/js/json-reporter.js"));
     }
 
     private void loadJasmine(final StringBuilder sb) {
-        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine/2.4.1/jasmine.js\");\n");
-        sb.append("load(\"classpath:META-INF/resources/webjars/jasmine/2.4.1/jasmine-html.js\");\n");
+        sb.append(
+                "load(\"classpath:META-INF/resources/webjars/jasmine/2.4.1/jasmine.js\");\n");
+        sb.append(
+                "load(\"classpath:META-INF/resources/webjars/jasmine/2.4.1/jasmine-html.js\");\n");
         sb.append("function extend(destination, source) {\n");
-        sb.append("for (var property in source) destination[property] = source[property];\n");
+        sb.append(
+                "for (var property in source) destination[property] = source[property];\n");
         sb.append("return destination;\n");
         sb.append("}\n");
 
         sb.append("window.jasmine = jasmineRequire.core(jasmineRequire);\n");
-        sb.append("var jasmineInterface = jasmineRequire.interface(jasmine, jasmine.getEnv());\n");
+        sb.append(
+                "var jasmineInterface = jasmineRequire.interface(jasmine, jasmine.getEnv());\n");
         sb.append("extend(window, jasmineInterface);\n");
     }
 
@@ -203,8 +215,9 @@ public class RestApiTest {
         ScriptEngineManager factory = new ScriptEngineManager();
         ScriptEngine engine = factory.getEngineByName("nashorn");
 
-        //Injection of __NASHORN_POLYFILL_TIMER__ in ScriptContext
-        engine.getContext().setAttribute("__NASHORN_POLYFILL_TIMER__", globalScheduledThreadPool, ScriptContext.ENGINE_SCOPE);
+        // Injection of __NASHORN_POLYFILL_TIMER__ in ScriptContext
+        engine.getContext().setAttribute("__NASHORN_POLYFILL_TIMER__",
+                globalScheduledThreadPool, ScriptContext.ENGINE_SCOPE);
         engine.getContext().setWriter(new PrintWriter(System.out));
         return engine;
     }

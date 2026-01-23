@@ -25,15 +25,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 import link.omny.catalog.CatalogTestApplication;
 import link.omny.catalog.model.CustomFeedbackField;
@@ -46,15 +43,17 @@ import link.omny.catalog.model.OrderItem;
 /**
  * @author Tim Stephenson
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = CatalogTestApplication.class)
+@SpringBootTest(classes = CatalogTestApplication.class, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 @WebAppConfiguration
 public class OrderContollerTest {
     private static final String CUST_FIELD_COLOUR = "colour";
 
-    private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField("field2", "bar");
+    private static final CustomOrderField CUSTOM_FIELD_2 = new CustomOrderField(
+            "field2", "bar");
 
-    private static final CustomOrderField CUSTOM_FIELD_1 = new CustomOrderField("field1", "foo");
+    private static final CustomOrderField CUSTOM_FIELD_1 = new CustomOrderField(
+            "field1", "foo");
 
     private static final String FEEDBACK = "5 stars";
 
@@ -107,10 +106,11 @@ public class OrderContollerTest {
         assertNotNull(order2);
         assertEquals(2, order2.getCustomFields().size());
 
-        order.setInvoiceRef(INVOICE_REF);
-        Order order3 = updateOrder(order.getId(), order);
-        assertNotNull(order3);
-        assertEquals(INVOICE_REF, order3.getInvoiceRef());
+        Order order3a = retrieveOrder(order.getId());
+        order3a.setInvoiceRef(INVOICE_REF);
+        Order order3b = updateOrder(order.getId(), order3a);
+        assertNotNull(order3b);
+        assertEquals(INVOICE_REF, order3b.getInvoiceRef());
 
         Feedback feedback = createFeedback();
         addFeedback(order.getId(), feedback);
@@ -119,37 +119,33 @@ public class OrderContollerTest {
         // h2 database does not do created time default
         // assertNotNull(orderIncFeedback.getFeedback().getCreated());
         assertEquals(FEEDBACK, feedback2.getDescription());
-        
+
         feedback.addCustomField(new CustomFeedbackField(FEEDBACK_CUSTOM_KEY,
                 FEEDBACK_CUSTOM_VALUE));
         addFeedback(order.getId(), feedback);
         Feedback feedback3 = retrieveFeedback(order.getId());
         assertNotNull(feedback3);
         assertEquals(1, feedback3.getCustomFields().size());
-        assertEquals(FEEDBACK_CUSTOM_KEY, feedback3.getCustomFields().iterator().next()
-                .getName());
-        assertEquals(FEEDBACK_CUSTOM_VALUE, feedback3.getCustomFields().iterator().next()
-                .getValue());
-        
+        assertEquals(FEEDBACK_CUSTOM_KEY,
+                feedback3.getCustomFields().iterator().next().getName());
+        assertEquals(FEEDBACK_CUSTOM_VALUE,
+                feedback3.getCustomFields().iterator().next().getValue());
+
         // check equivalence of readOrder and readOrders API
-        List<EntityModel<Order>> orders = svc.readOrders(TENANT_ID, order.getId().toString());
+        List<EntityModel<Order>> orders = svc.readOrders(TENANT_ID,
+                order.getId().toString());
         Order order4 = orders.get(0).getContent();
         assertNotNull(order4);
         assertEquals(order.getId(), order4.getId());
         assertEquals(order.getName(), order4.getName());
         assertEquals(order.getType(), order4.getType());
-        assertEquals(order.getOrderItems().size(), order4.getOrderItems().size());
+        assertEquals(order.getOrderItems().size(),
+                order4.getOrderItems().size());
 
         deleteOrder(order.getId());
 
         Order order5 = retrieveOrder(order.getId());
         assertEquals("deleted", order5.getStage());
-    }
-
-    private OrderItem createOrderItem(Order order, OrderItem orderItem1) {
-        String uri = svc.addOrderItem(TENANT_ID, order.getId(), orderItem1).getHeaders().getLocation().toString();
-        orderItem1.setId(Long.valueOf(uri.substring(uri.lastIndexOf('/')+1)));
-        return orderItem1;
     }
 
     @Test
@@ -159,41 +155,44 @@ public class OrderContollerTest {
         assertNotNull(order.getId());
         assertEquals(2, order.getOrderItems().size());
         assertTrue(order.getOrderItems().stream()
-                .filter(x -> (x.getCustomFieldValue(CUST_FIELD_COLOUR).equals("Avocado")
-                        && x.getPrice().equals(PRICE)))
+                .filter(x -> (x.getCustomFieldValue(CUST_FIELD_COLOUR)
+                        .equals("Avocado") && x.getPrice().equals(PRICE)))
                 .findFirst().isPresent());
 
-        Order order2 = retrieveOrder(order.getId());
-        assertNotNull(order2);
+        Order order2a = retrieveOrder(order.getId());
+        assertNotNull(order2a);
 
         // Update price
-        assertEquals(2, order2.getOrderItems().size());
-        Iterator<OrderItem> it = order2.getOrderItems().iterator();
+        assertEquals(2, order2a.getOrderItems().size());
+        Iterator<OrderItem> it = order2a.getOrderItems().iterator();
         OrderItem orderItem1 = it.next();
         assertEquals(PRICE, orderItem1.getPrice());
         orderItem1.setPrice(PRICE_INCREASED);
 
-        Order order2b = updateOrder(order2.getId(), order2);
+        Order order2b = updateOrder(order2a.getId(), order2a);
         assertNotNull(order2b);
         assertEquals(2, order2b.getOrderItems().size());
         // OrderItem orderItem1b = order2b.getOrderItems().iterator().next();
         // assertEquals(orderItem1.getId(), orderItem1b.getId());
         // assertEquals(PRICE_INCREASED.doubleValue(), orderItem1b.getPrice()
-        //         .doubleValue(), 0.01);
+        // .doubleValue(), 0.01);
 
         // Update custom field
-        order2b.getOrderItems().iterator().next().addCustomField(
-                        new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
-        Order order2c = updateOrder(order2b.getId(), order2b);
-        assertNotNull(order2c);
-        OrderItem orderItem2c = order2c.getOrderItems().iterator().next();
-        assertEquals(1, orderItem2c.getCustomFields().size());
-//        assertEquals("Absinthe", orderItem2c.getCustomFields().iterator().next().getValue());
+        Order order2c = retrieveOrder(order2a.getId());
+        order2c.getOrderItems().iterator().next().addCustomField(
+                new CustomOrderItemField(CUST_FIELD_COLOUR, "Absinthe"));
+        Order order2d = updateOrder(order2c.getId(), order2c);
+        assertNotNull(order2d);
+        OrderItem orderItem2d = order2d.getOrderItems().iterator().next();
+        assertEquals(1, orderItem2d.getCustomFields().size());
+        // assertEquals("Absinthe",
+        // orderItem2d.getCustomFields().iterator().next().getValue());
 
-        order.setInvoiceRef(INVOICE_REF);
-        Order order3 = updateOrder(order.getId(), order);
-        assertNotNull(order3);
-        assertEquals(INVOICE_REF, order3.getInvoiceRef());
+        Order order3a = retrieveOrder(order.getId());
+        order3a.setInvoiceRef(INVOICE_REF);
+        Order order3b = updateOrder(order.getId(), order3a);
+        assertNotNull(order3b);
+        assertEquals(INVOICE_REF, order3b.getInvoiceRef());
 
         Feedback feedback = createFeedback();
         addFeedback(order.getId(), feedback);
@@ -207,7 +206,6 @@ public class OrderContollerTest {
 
     @Test
     public void testCreateOrderWithItemsIncCustomFieldsInOne() {
-
     }
 
     private Order createOrder() {
@@ -240,7 +238,7 @@ public class OrderContollerTest {
 
         OrderItem orderItem1 = getOrderItem("Widget", "Avocado");
         order.addOrderItem(orderItem1);
-        
+
         OrderItem orderItem2 = getOrderItem("Widget", "Blue");
         order.addOrderItem(orderItem2);
 
@@ -250,8 +248,8 @@ public class OrderContollerTest {
     private OrderItem getOrderItem(String type, String colour) {
         OrderItem orderItem2 = new OrderItem(type);
         orderItem2.setPrice(PRICE);
-        orderItem2
-                .addCustomField(new CustomOrderItemField(CUST_FIELD_COLOUR, colour));
+        orderItem2.addCustomField(
+                new CustomOrderItemField(CUST_FIELD_COLOUR, colour));
         return orderItem2;
     }
 
@@ -259,7 +257,7 @@ public class OrderContollerTest {
         String body = svc.findEntityById(TENANT_ID, orderId).getBody();
         try {
             return objectMapper.readValue(body, Order.class);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             fail("unable to deserialise order", e);
         }
         return null;

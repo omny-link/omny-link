@@ -25,8 +25,7 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 public class FeedbackTest {
 
@@ -58,17 +57,20 @@ public class FeedbackTest {
         feedback.setCustomFields(Collections.singleton(field2));
 
         assertEquals(1, feedback.getCustomFields().size());
-        assertEquals(field1.getId(), feedback.getCustomFields().iterator().next().getId());
+        assertEquals(field1.getId(),
+                feedback.getCustomFields().iterator().next().getId());
 
         StringWriter out = new StringWriter();
         try {
             objectMapper.writeValue(out, feedback);
-            Feedback feedback2 = objectMapper.readValue(out.toString().getBytes(), Feedback.class);
+            Feedback feedback2 = objectMapper
+                    .readValue(out.toString().getBytes(), Feedback.class);
             assertEquals(feedback.toString(), feedback2.toString());
             assertEquals(1, feedback.getCustomFields().size());
-            assertEquals(feedback.getCustomFields().size(), feedback2.getCustomFields().size());
+            assertEquals(feedback.getCustomFields().size(),
+                    feedback2.getCustomFields().size());
             assertEquals("foo", feedback2.getCustomFieldValue("field1"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
         }
@@ -77,8 +79,10 @@ public class FeedbackTest {
     @Test
     public void testPayload() throws IOException {
         String json = "{\"customFields\":{\"coachComments\":\"Coach says went well\"}}";
-        Feedback feedback = objectMapper.readValue(json .getBytes(), Feedback.class);
+        Feedback feedback = objectMapper.readValue(json.getBytes(),
+                Feedback.class);
         assertEquals(1, feedback.getCustomFields().size());
-        assertEquals("Coach says went well", feedback.getCustomFieldValue("coachComments"));
+        assertEquals("Coach says went well",
+                feedback.getCustomFieldValue("coachComments"));
     }
 }

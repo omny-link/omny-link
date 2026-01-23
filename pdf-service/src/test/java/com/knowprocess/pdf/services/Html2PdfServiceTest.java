@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.knowprocess.pdf.services;
 
-
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -23,7 +22,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.junit.jupiter.api.Test;
-
 
 public class Html2PdfServiceTest {
 
@@ -58,7 +56,8 @@ public class Html2PdfServiceTest {
     @Test
     public void testHtml2BookingConfirmation() {
         Html2PdfService svc = new Html2PdfService();
-        String var = svc.getClasspathResource("/docs/testBookingConfirmationv2.html");
+        String var = svc
+                .getClasspathResource("/docs/testBookingConfirmationv2.html");
         File out = new File("target", "testBookingConfirmationv2.pdf");
         try (FileOutputStream os = new FileOutputStream(out)) {
             svc.execute(var, os);

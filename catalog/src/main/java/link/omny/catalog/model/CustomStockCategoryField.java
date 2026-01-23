@@ -27,14 +27,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
-import org.springframework.data.rest.core.annotation.RestResource;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import link.omny.supportservices.model.CustomField;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.rest.core.annotation.RestResource;
+
+import link.omny.supportservices.model.CustomField;
 
 @Entity
 @Table(name = "OL_STOCK_CAT_CUSTOM")
@@ -64,22 +63,19 @@ public class CustomStockCategoryField extends CustomField {
 
     @Override
     public String toString() {
-        return String
-                .format("CustomStockCategoryField [id=%s, name=%s, value=%s, stockCategoryId=%s]",
-                        getId(), getName(), getValue(),
-                        stockCategory == null ? null : stockCategory.getId());
+        return String.format(
+                "CustomStockCategoryField [id=%s, name=%s, value=%s, stockCategoryId=%s]",
+                getId(), getName(), getValue(),
+                stockCategory == null ? null : stockCategory.getId());
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime
-                * result
-                + ((stockCategory == null) ? 0
-                        : stockCategory.getId() == null ? 0 : stockCategory
-                                .getId()
-                        .hashCode());
+        result = prime * result + ((stockCategory == null) ? 0
+                : stockCategory.getId() == null ? 0
+                        : stockCategory.getId().hashCode());
         return result;
     }
 

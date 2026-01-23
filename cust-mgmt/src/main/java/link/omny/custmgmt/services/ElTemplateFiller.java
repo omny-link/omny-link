@@ -37,14 +37,15 @@ public class ElTemplateFiller {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ElTemplateFiller.class);
 
-    public String evaluateTemplate(String template, Map<String,Object> params) throws NoSuchMethodException {
+    public String evaluateTemplate(String template, Map<String, Object> params)
+            throws NoSuchMethodException {
         long start = System.currentTimeMillis();
         LOGGER.info("evaluateTemplate {}", template);
         ExpressionFactory factory = ExpressionFactory.newInstance();
         ELContext context = new StandardELContext(factory);
 
         for (Entry<String, Object> entry : params.entrySet()) {
-            if (entry.getValue()==null) {
+            if (entry.getValue() == null) {
                 context.getVariableMapper().setVariable(entry.getKey(),
                         factory.createValueExpression("", String.class));
             } else {
@@ -58,11 +59,15 @@ public class ElTemplateFiller {
         context.getVariableMapper().setVariable("now",
                 factory.createValueExpression(new Date(), Date.class));
         context.getVariableMapper().setVariable("dateFormatter",
-                factory.createValueExpression(new DateFormatter(), DateFormatter.class));
+                factory.createValueExpression(new DateFormatter(),
+                        DateFormatter.class));
         context.getVariableMapper().setVariable("gbpFormatter",
-                factory.createValueExpression(DecimalFormat.getCurrencyInstance(), NumberFormat.class));
+                factory.createValueExpression(
+                        DecimalFormat.getCurrencyInstance(),
+                        NumberFormat.class));
 
-        ValueExpression expr = factory.createValueExpression(context, template, String.class);
+        ValueExpression expr = factory.createValueExpression(context, template,
+                String.class);
         String html;
         try {
             html = escape((String) expr.getValue(context));
@@ -70,12 +75,12 @@ public class ElTemplateFiller {
             LOGGER.error("Unable to evaluate template", e);
             html = "Unable to evaluate template";
         }
-        LOGGER.info("evaluateTemplate took {}ms", (System.currentTimeMillis()-start));
+        LOGGER.info("evaluateTemplate took {}ms",
+                (System.currentTimeMillis() - start));
         return html;
     }
 
     private String escape(String value) {
         return value.replaceAll("£", "&pound;");
     }
-
 }

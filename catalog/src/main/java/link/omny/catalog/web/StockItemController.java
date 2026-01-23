@@ -28,6 +28,9 @@ import java.util.List;
 
 import jakarta.transaction.Transactional;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,10 +53,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import link.omny.catalog.internal.CatalogCsvImporter;
 import link.omny.catalog.model.CustomStockItemField;
 import link.omny.catalog.model.MediaResource;
@@ -178,13 +177,15 @@ public class StockItemController {
             @PathVariable("tenantId") String tenantId,
             @RequestParam(value = "page", required = false) Integer page,
             @RequestParam(value = "limit", required = false) Integer limit) {
-        StringBuilder sb = new StringBuilder()
-                .append("id,stockCategoryId,name,description,size,sizeString,unit,price,"
+        StringBuilder sb = new StringBuilder().append(
+                "id,stockCategoryId,name,description,size,sizeString,unit,price,"
                         + "tags,videoCode,status,offerStatus,"
                         + "offerTitle,offerDescription,offerCallToAction,"
                         + "offerUrl,tenantId,created,lastUpdated,");
-        List<String> customFieldNames = stockItemRepo.findCustomFieldNames(tenantId);
-        LOGGER.info("Found {} custom field names while exporting orders for {}: {}",
+        List<String> customFieldNames = stockItemRepo
+                .findCustomFieldNames(tenantId);
+        LOGGER.info(
+                "Found {} custom field names while exporting orders for {}: {}",
                 customFieldNames.size(), tenantId, customFieldNames);
         for (String fieldName : customFieldNames) {
             sb.append(fieldName).append(",");
@@ -200,8 +201,8 @@ public class StockItemController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentLength(sb.length());
-        return new ResponseEntity<String>(
-                sb.toString(), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>(sb.toString(), httpHeaders,
+                HttpStatus.OK);
     }
 
     /**
@@ -222,8 +223,8 @@ public class StockItemController {
                     tenantId);
         } else {
             Pageable pageable = PageRequest.of(page == null ? 0 : page, limit);
-            list = stockItemRepo.findPageByStatusForTenant(
-                    status.toLowerCase(), tenantId, pageable);
+            list = stockItemRepo.findPageByStatusForTenant(status.toLowerCase(),
+                    tenantId, pageable);
         }
         LOGGER.info("Found {} stockItems", list.size());
 
@@ -231,9 +232,8 @@ public class StockItemController {
     }
 
     protected StockItem findById(final String tenantId, final Long id) {
-        return stockItemRepo.findById(id)
-                .orElseThrow(() -> new BusinessEntityNotFoundException(
-                        StockItem.class, id));
+        return stockItemRepo.findById(id).orElseThrow(
+                () -> new BusinessEntityNotFoundException(StockItem.class, id));
     }
 
     /**
@@ -254,7 +254,8 @@ public class StockItemController {
 
         StockItem item = findById(tenantId, Long.parseLong(id));
         LOGGER.info("Found item from category {} with {} custom fields",
-                (item.getStockCategory() == null ? "n/a" : item.getStockCategory().getName()),
+                (item.getStockCategory() == null ? "n/a"
+                        : item.getStockCategory().getName()),
                 item.getCustomFields().size());
 
         return addLinks(tenantId, item);
@@ -272,12 +273,12 @@ public class StockItemController {
             @PathVariable("categoryName") String categoryName) {
 
         if (categoryName == null) {
-            throw new IllegalArgumentException(
-                    String.format("You must specify the category name to search for"));
+            throw new IllegalArgumentException(String.format(
+                    "You must specify the category name to search for"));
         }
 
-        return addLinks(tenantId, stockItemRepo.findAllForCategoryName(
-                categoryName.toLowerCase(), tenantId));
+        return addLinks(tenantId, stockItemRepo
+                .findAllForCategoryName(categoryName.toLowerCase(), tenantId));
     }
 
     /**
@@ -314,11 +315,10 @@ public class StockItemController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    /**
-     * Update an existing stockItem.
-     */
+    /** Update an existing stockItem. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = {
+        "application/json" })
     @Transactional
     @Operation(summary = "Update an existing stock item.")
     public @ResponseBody void update(@PathVariable("tenantId") String tenantId,
@@ -326,25 +326,39 @@ public class StockItemController {
             @RequestBody StockItem updatedStockItem) {
         StockItem stockItem = findById(tenantId, stockItemId);
 
+        // Avoid copying collection references which can cause shared collection
+        // errors
+        // (e.g., documents/notes/customFields). Copy scalars; merge collections
+        // explicitly.
         NullAwareBeanUtils.copyNonNullProperties(updatedStockItem, stockItem,
-                "id", "tagsAsList", "stockCategory");
+                "id", "tagsAsList", "stockCategory", "documents", "notes",
+                "customFields");
+
+        // Merge custom fields safely to preserve ownership and avoid shared
+        // collection
+        // instances
+        if (updatedStockItem.getCustomFields() != null
+                && !updatedStockItem.getCustomFields().isEmpty()) {
+            stockItem.setCustomFields(updatedStockItem.getCustomFields());
+        }
         // Seems stock cat is always null under Spring Boot 2
         if (stockItem.getStockCategory() != null
                 && updatedStockItem.getStockCategory().getId() != null
-                && !updatedStockItem.getStockCategory().getId().equals(stockItem.getStockCategory().getId())) {
+                && !updatedStockItem.getStockCategory().getId()
+                        .equals(stockItem.getStockCategory().getId())) {
             // During creation stock cat name may be set whilst id is not
-            stockItem.setStockCategory(stockCategoryRepo.findByName(updatedStockItem.getStockCategory().getName(), tenantId));
+            stockItem.setStockCategory(stockCategoryRepo.findByName(
+                    updatedStockItem.getStockCategory().getName(), tenantId));
         }
 
         stockItem.setTenantId(tenantId);
         stockItem = stockItemRepo.save(stockItem);
     }
 
-    /**
-     * Update a single custom field of the specified stockItem.
-     */
+    /** Update a single custom field of the specified stockItem. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = { "application/x-www-form-urlencoded" })
+    @RequestMapping(value = "/{id}", method = RequestMethod.POST, consumes = {
+        "application/x-www-form-urlencoded" })
     @Operation(summary = "Update a custom field of the specified stock item.")
     public @ResponseBody void updateCustomField(
             @PathVariable("tenantId") String tenantId,
@@ -357,18 +371,16 @@ public class StockItemController {
         stockItemRepo.save(stockItem);
     }
 
-    /**
-     * Update a media resource to the specified item.
-     */
-    @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.PUT, consumes = { "application/json" })
+    /** Update a media resource to the specified item. */
+    @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.PUT, consumes = {
+        "application/json" })
     @Operation(summary = "Update an image linked to the specified stock item.")
     public @ResponseBody void updateImage(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId,
             @PathVariable("id") Long resourceId,
             @RequestBody MediaResource updatedResource) {
-        MediaResource resource = mediaResourceRepo
-                .findById(resourceId)
+        MediaResource resource = mediaResourceRepo.findById(resourceId)
                 .orElseThrow(() -> new BusinessEntityNotFoundException(
                         StockItem.class, resourceId));
         BeanUtils.copyProperties(updatedResource, resource, "id", "stockItem");
@@ -384,16 +396,15 @@ public class StockItemController {
     public @ResponseBody List<MediaResource> listImages(
             @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId) {
-         List<MediaResource> resources = mediaResourceRepo.findByStockItemId(stockItemId);
-         for (MediaResource resource : resources) {
-             mediaResourceSvc.addLinks(tenantId, resource);
-         }
-         return resources;
+        List<MediaResource> resources = mediaResourceRepo
+                .findByStockItemId(stockItemId);
+        for (MediaResource resource : resources) {
+            mediaResourceSvc.addLinks(tenantId, resource);
+        }
+        return resources;
     }
 
-    /**
-     * Add a media resource to the specified stockItem.
-     */
+    /** Add a media resource to the specified stockItem. */
     @RequestMapping(value = "/{stockItemId}/images", method = RequestMethod.POST)
     @Operation(summary = "Add an image to the specified stock item.")
     public @ResponseBody void addImage(
@@ -404,9 +415,7 @@ public class StockItemController {
         addMediaResource(tenantId, stockItemId, new MediaResource(author, url));
     }
 
-    /**
-     * Add a media resource to the specified stockItem.
-     */
+    /** Add a media resource to the specified stockItem. */
     public void addMediaResource(String tenantId, Long stockItemId,
             MediaResource mediaResource) {
         StockItem stockItem = findById(tenantId, stockItemId);
@@ -414,37 +423,37 @@ public class StockItemController {
         mediaResourceRepo.save(mediaResource);
         // necessary to force a save
         stockItem.setLastUpdated(new Date());
-        stockItem= stockItemRepo.save(stockItem);
+        stockItem = stockItemRepo.save(stockItem);
     }
 
-    /**
-     * Add a document to the specified stockItem.
-     */
+    /** Add a document to the specified stockItem. */
     @RequestMapping(value = "/{stockItemId}/documents", method = RequestMethod.POST)
     @Transactional
     @Operation(summary = "Add a document to the specified stock item.")
     public @ResponseBody ResponseEntity<Document> addDocument(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("stockItemId") Long stockItemId, @RequestBody Document doc) {
-         StockItem stockItem = findById(tenantId, stockItemId);
-         stockItem.getDocuments().add(doc);
-         stockItem.setLastUpdated(new Date());
-         stockItem = stockItemRepo.save(stockItem);
-         doc = stockItem.getDocuments().stream()
-                 .reduce((first, second) -> second).orElse(null);
+            @PathVariable("stockItemId") Long stockItemId,
+            @RequestBody Document doc) {
+        StockItem stockItem = findById(tenantId, stockItemId);
+        stockItem.getDocuments().add(doc);
+        stockItem.setLastUpdated(new Date());
+        stockItem = stockItemRepo.save(stockItem);
+        doc = stockItem.getDocuments().stream()
+                .reduce((first, second) -> second).orElse(null);
 
-         HttpHeaders headers = new HttpHeaders();
-         URI uri = MvcUriComponentsBuilder.fromController(getClass())
-                 .path("/{id}/documents/{docId}")
-                 .buildAndExpand(tenantId, stockItem.getId(), doc.getId())
-                 .toUri();
-         headers.setLocation(uri);
+        HttpHeaders headers = new HttpHeaders();
+        URI uri = MvcUriComponentsBuilder.fromController(getClass())
+                .path("/{id}/documents/{docId}")
+                .buildAndExpand(tenantId, stockItem.getId(), doc.getId())
+                .toUri();
+        headers.setLocation(uri);
 
-         return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
+        return new ResponseEntity<Document>(doc, headers, HttpStatus.CREATED);
     }
 
     /**
      * Add a note to the specified stockItem.
+     *
      * @return the created note.
      */
     @RequestMapping(value = "/{stockItemId}/notes", method = RequestMethod.POST)
@@ -452,13 +461,14 @@ public class StockItemController {
     @Operation(summary = "Add a document to the specified stock category.")
     public @ResponseBody ResponseEntity<Note> addNote(
             @PathVariable("tenantId") String tenantId,
-            @PathVariable("stockItemId") Long stockItemId, @RequestBody Note note) {
+            @PathVariable("stockItemId") Long stockItemId,
+            @RequestBody Note note) {
         StockItem stockItem = findById(tenantId, stockItemId);
         stockItem.getNotes().add(note);
         stockItem.setLastUpdated(new Date());
         stockItem = stockItemRepo.save(stockItem);
-        note = stockItem.getNotes().stream()
-                .reduce((first, second) -> second).orElse(null);
+        note = stockItem.getNotes().stream().reduce((first, second) -> second)
+                .orElse(null);
 
         HttpHeaders headers = new HttpHeaders();
         URI uri = MvcUriComponentsBuilder.fromController(getClass())
@@ -471,8 +481,8 @@ public class StockItemController {
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{itemId}/stockCategory",
-            method = RequestMethod.PUT, consumes = { "text/uri-list" })
+    @RequestMapping(value = "/{itemId}/stockCategory", method = RequestMethod.PUT, consumes = {
+        "text/uri-list" })
     @Transactional
     @Operation(summary = "Sets the category for the specified stock item.")
     public @ResponseBody void setStockCategory(
@@ -486,14 +496,14 @@ public class StockItemController {
                     categoryUri.substring(categoryUri.lastIndexOf('/') + 1));
             stockItemRepo.setStockCategory(itemId, categoryId);
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(
-                    String.format("%1$s is not a valid stock category", categoryUri));
+            throw new IllegalArgumentException(String
+                    .format("%1$s is not a valid stock category", categoryUri));
         }
     }
 
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    @RequestMapping(value = "/{categoryId}/stockCategory",
-            method = RequestMethod.PUT, consumes = { "application/json" })
+    @RequestMapping(value = "/{categoryId}/stockCategory", method = RequestMethod.PUT, consumes = {
+        "application/json" })
     @Transactional
     @Operation(hidden = true)
     @Deprecated
@@ -504,9 +514,7 @@ public class StockItemController {
         setStockCategory(tenantId, itemUri, categoryId);
     }
 
-    /**
-     * Delete an existing stockItem.
-     */
+    /** Delete an existing stockItem. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @Operation(summary = "Delete the specified stock item.")
@@ -515,19 +523,19 @@ public class StockItemController {
         stockItemRepo.deleteById(stockItemId);
     }
 
-    /**
-     * Delete a stock item's image.
-     */
+    /** Delete a stock item's image. */
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     @RequestMapping(value = "/{stockItemId}/images/{id}", method = RequestMethod.DELETE)
     @Operation(summary = "Delete an image of the specified stock item.")
-    public @ResponseBody void deleteImage(@PathVariable("tenantId") String tenantId,
+    public @ResponseBody void deleteImage(
+            @PathVariable("tenantId") String tenantId,
             @PathVariable("stockItemId") Long stockItemId,
             @PathVariable("id") Long imageId) {
         mediaResourceRepo.deleteById(imageId);
     }
 
-    protected List<EntityModel<StockItem>> addLinks(final String tenantId, final List<StockItem> list) {
+    protected List<EntityModel<StockItem>> addLinks(final String tenantId,
+            final List<StockItem> list) {
         ArrayList<EntityModel<StockItem>> entities = new ArrayList<EntityModel<StockItem>>();
         for (StockItem stockItem : list) {
             entities.add(addLinks(tenantId, stockItem));
@@ -535,14 +543,18 @@ public class StockItemController {
         return entities;
     }
 
-    protected EntityModel<StockItem> addLinks(final String tenantId, final StockItem stockItem) {
+    protected EntityModel<StockItem> addLinks(final String tenantId,
+            final StockItem stockItem) {
         EntityModel<StockItem> model = EntityModel.of(stockItem,
-                linkTo(methodOn(StockItemController.class).findEntityById(tenantId, stockItem.getId().toString()))
+                linkTo(methodOn(StockItemController.class)
+                        .findEntityById(tenantId, stockItem.getId().toString()))
                         .withSelfRel());
         if (stockItem.getStockCategory() != null) {
-            model.add(linkTo(methodOn(StockCategoryController.class).findEntityById(
-                    tenantId, String.valueOf(stockItem.getStockCategory().getId())))
-                            .withRel("stock-category"));
+            model.add(linkTo(methodOn(StockCategoryController.class)
+                    .findEntityById(tenantId,
+                            String.valueOf(
+                                    stockItem.getStockCategory().getId())))
+                    .withRel("stock-category"));
         }
         return model;
     }

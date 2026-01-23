@@ -26,7 +26,8 @@ import link.omny.supportservices.Application;
 import link.omny.supportservices.model.NumberSequence;
 import link.omny.supportservices.repositories.NumberSequenceRepository;
 
-@SpringBootTest(classes = { Application.class })
+@SpringBootTest(classes = { Application.class }, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 public class NumberSequenceControllerTest {
 
     private static final String SEQ_NAME = "Contact";

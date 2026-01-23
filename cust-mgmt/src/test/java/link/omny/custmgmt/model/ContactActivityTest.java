@@ -36,12 +36,11 @@ public class ContactActivityTest {
     @BeforeEach
     public void setUpBeforeClass() throws Exception {
         contact = new Contact();
-        contact.getActivities().add(new Activity(ActivityType.REGISTRATION, null));
-        contact.getActivities().add(
-                new Activity(ActivityType.LOGIN, new GregorianCalendar(2015, 1, 1, 13, 0,
-                        0).getTime()));
+        contact.getActivities()
+                .add(new Activity(ActivityType.REGISTRATION, null));
+        contact.getActivities().add(new Activity(ActivityType.LOGIN,
+                new GregorianCalendar(2015, 1, 1, 13, 0, 0).getTime()));
     }
-
 
     @Test
     public void testTimeSinceLogin() {
@@ -50,15 +49,16 @@ public class ContactActivityTest {
 
     @Test
     public void testTimeSinceFirstLogin() {
-        contact.getActivities().add(new Activity(ActivityType.LOGIN, new Date()));
+        contact.getActivities()
+                .add(new Activity(ActivityType.LOGIN, new Date()));
         assertTrue(contact.getTimeSinceFirstLogin() > ONE_WEEK);
     }
 
     @Test
     public void testHaveSentEmail() {
         assertTrue(contact.notYetSentEmail("welcome"));
-        contact.getActivities().add(
-                new Activity(ActivityType.EMAIL, new Date(), "welcome"));
+        contact.getActivities()
+                .add(new Activity(ActivityType.EMAIL, new Date(), "welcome"));
         assertTrue(contact.haveSentEmail("welcome"));
     }
 
@@ -70,17 +70,17 @@ public class ContactActivityTest {
     @Test
     public void testMailsSent() {
         assertEquals(contact.getEmailsSent(), 0);
-        contact.getActivities().add(
-                new Activity(ActivityType.EMAIL, new Date(), "welcome"));
+        contact.getActivities()
+                .add(new Activity(ActivityType.EMAIL, new Date(), "welcome"));
         assertEquals(contact.getEmailsSent(), 1);
     }
 
     @Test
     public void testTimeSinceLastEmail() {
-        contact.getActivities().add(
-                new Activity(ActivityType.EMAIL, new GregorianCalendar(2015, 1, 1, 13, 0,
-                        0).getTime()));
-        contact.getActivities().add(new Activity(ActivityType.EMAIL, new Date()));
+        contact.getActivities().add(new Activity(ActivityType.EMAIL,
+                new GregorianCalendar(2015, 1, 1, 13, 0, 0).getTime()));
+        contact.getActivities()
+                .add(new Activity(ActivityType.EMAIL, new Date()));
         assertTrue(contact.getTimeSinceEmail() < ONE_MINUTE);
     }
 }

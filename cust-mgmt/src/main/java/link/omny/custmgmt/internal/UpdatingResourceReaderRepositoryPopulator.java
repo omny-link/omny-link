@@ -35,12 +35,10 @@ import org.springframework.data.repository.init.ResourceReaderRepositoryPopulato
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.util.Assert;
 
-/**
- */
-public class UpdatingResourceReaderRepositoryPopulator extends
-        ResourceReaderRepositoryPopulator implements
-        RepositoryPopulator,
-        ApplicationEventPublisherAware {
+/** */
+public class UpdatingResourceReaderRepositoryPopulator
+        extends ResourceReaderRepositoryPopulator
+        implements RepositoryPopulator, ApplicationEventPublisherAware {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UpdatingResourceReaderRepositoryPopulator.class);
@@ -55,7 +53,7 @@ public class UpdatingResourceReaderRepositoryPopulator extends
     /**
      * Creates a new {@link ResourceReaderRepositoryPopulator} using the given
      * {@link ResourceReader}.
-     * 
+     *
      * @param reader
      *            must not be {@literal null}.
      */
@@ -66,7 +64,7 @@ public class UpdatingResourceReaderRepositoryPopulator extends
     /**
      * Creates a a new {@link ResourceReaderRepositoryPopulator} using the given
      * {@link ResourceReader} and {@link ClassLoader}.
-     * 
+     *
      * @param reader
      *            must not be {@literal null}.
      * @param classLoader
@@ -79,14 +77,15 @@ public class UpdatingResourceReaderRepositoryPopulator extends
 
         this.reader = reader;
         this.classLoader = classLoader;
-        this.resolver = classLoader == null ? new PathMatchingResourcePatternResolver()
+        this.resolver = classLoader == null
+                ? new PathMatchingResourcePatternResolver()
                 : new PathMatchingResourcePatternResolver(classLoader);
     }
 
     /**
      * Configures the location of the {@link Resource}s to be used to initialize
      * the repositories.
-     * 
+     *
      * @param location
      *            must not be {@literal null} or empty.
      * @throws IOException
@@ -99,7 +98,7 @@ public class UpdatingResourceReaderRepositoryPopulator extends
     /**
      * Configures the {@link Resource}s to be used to initialize the
      * repositories.
-     * 
+     *
      * @param resources
      */
     public void setResources(Resource... resources) {
@@ -111,7 +110,8 @@ public class UpdatingResourceReaderRepositoryPopulator extends
      *      setApplicationEventPublisher
      *      (org.springframework.context.ApplicationEventPublisher)
      */
-    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+    public void setApplicationEventPublisher(
+            ApplicationEventPublisher publisher) {
         this.publisher = publisher;
     }
 
@@ -131,7 +131,8 @@ public class UpdatingResourceReaderRepositoryPopulator extends
                     if (element != null) {
                         persist(element, repositories);
                     } else {
-                        LOGGER.info("Skipping null element found in unmarshal result!");
+                        LOGGER.info(
+                                "Skipping null element found in unmarshal result!");
                     }
                 }
             } else {
@@ -140,15 +141,15 @@ public class UpdatingResourceReaderRepositoryPopulator extends
         }
 
         if (publisher != null) {
-            publisher.publishEvent(new RepositoriesPopulatedEvent(this,
-                    repositories));
+            publisher.publishEvent(
+                    new RepositoriesPopulatedEvent(this, repositories));
         }
     }
 
     /**
      * Reads the given resource into an {@link Object} using the configured
      * {@link ResourceReader}.
-     * 
+     *
      * @param resource
      *            must not be {@literal null}.
      * @return
@@ -163,7 +164,7 @@ public class UpdatingResourceReaderRepositoryPopulator extends
 
     /**
      * Persists the given {@link Object} using a suitable repository.
-     * 
+     *
      * @param object
      *            must not be {@literal null}.
      * @param repositories
@@ -174,16 +175,16 @@ public class UpdatingResourceReaderRepositoryPopulator extends
         CrudRepository<Object, ?> repositoryFor = (CrudRepository<Object, ?>) repositories
                 .getRepositoryFor(object.getClass())
                 .orElseThrow(() -> new IllegalArgumentException(
-                        String.format("No repository for %1$s", object.getClass().getName())));
+                        String.format("No repository for %1$s",
+                                object.getClass().getName())));
         LOGGER.debug(String.format("Persisting %s using repository %s", object,
                 repositoryFor));
         try {
             repositoryFor.save(object);
         } catch (DataIntegrityViolationException e) {
-            LOGGER.warn(String.format(
-                    "Ignoring failed data initialization: %1$s",
-                    e.getMessage()));
+            LOGGER.warn(
+                    String.format("Ignoring failed data initialization: %1$s",
+                            e.getMessage()));
         }
     }
-
 }

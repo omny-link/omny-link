@@ -35,19 +35,23 @@ public interface AccountRepository extends JpaRepository<Account, Long>,
         JpaSpecificationExecutor<Account> {
     @Override
     @EntityGraph(value = "accountWithAll")
-    @NonNull Optional<Account> findById(@NonNull Long id);
+    @NonNull
+    Optional<Account> findById(@NonNull Long id);
 
     @Query("SELECT a FROM Account a INNER JOIN a.customFields c WHERE (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId AND c.name='orgCode' AND c.value = :code ORDER BY a.lastUpdated DESC")
-    Account findByCodeForTenant(@Param("code") String code, @Param("tenantId") String tenantId);
+    Account findByCodeForTenant(@Param("code") String code,
+            @Param("tenantId") String tenantId);
 
     @Query("SELECT a FROM Account a WHERE a.name = :name AND (a.stage IS NULL OR a.stage != 'deleted') AND a.tenantId = :tenantId ORDER BY a.lastUpdated DESC")
-    Account findByNameForTenant(@Param("name") String name, @Param("tenantId") String tenantId);
+    Account findByNameForTenant(@Param("name") String name,
+            @Param("tenantId") String tenantId);
 
     @Query("SELECT a FROM Account a INNER JOIN a.customFields c "
             + "WHERE (a.stage IS NULL OR a.stage != 'deleted') "
             + "AND a.tenantId = :tenantId AND c.name=:fieldName "
             + "AND c.value = :fieldValue ORDER BY a.lastUpdated DESC")
-    List<Account> findByCustomFieldForTenant(@Param("fieldName") String fieldName,
+    List<Account> findByCustomFieldForTenant(
+            @Param("fieldName") String fieldName,
             @Param("fieldValue") String fieldValue,
             @Param("tenantId") String tenantId);
 
@@ -63,11 +67,11 @@ public interface AccountRepository extends JpaRepository<Account, Long>,
 
     @Query(value = "UPDATE Account a set a.stage = :stage WHERE (a.lastUpdated < :before OR a.lastUpdated IS NULL) AND a.stage != 'deleted'AND a.tenantId = :tenantId")
     @Modifying(clearAutomatically = true)
-    int updateStage(@Param("stage") String stage, @Param("before") Date before, @Param("tenantId") String tenantId);
+    int updateStage(@Param("stage") String stage, @Param("before") Date before,
+            @Param("tenantId") String tenantId);
 
     @Override
     @Query("UPDATE #{#entityName} x set x.stage = 'deleted', lastUpdated = CURRENT_TIMESTAMP where x.id = :id")
     @Modifying(clearAutomatically = true)
     public void deleteById(@Param("id") Long id);
-
 }

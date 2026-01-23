@@ -15,21 +15,20 @@
  ******************************************************************************/
 package link.omny.catalog.json;
 
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import link.omny.catalog.model.CustomFeedbackField;
 import link.omny.supportservices.json.JsonCustomFieldDeserializer;
 import link.omny.supportservices.model.CustomField;
 
-public class JsonCustomFeedbackFieldDeserializer extends
-        JsonCustomFieldDeserializer<Set<CustomFeedbackField>> {
+public class JsonCustomFeedbackFieldDeserializer
+        extends JsonCustomFieldDeserializer<Set<CustomFeedbackField>> {
 
     protected CustomField newInstance(Entry<String, JsonNode> entry) {
-        return new CustomFeedbackField(entry.getKey(), entry.getValue()
-                .asText());
+        return new CustomFeedbackField(entry.getKey(),
+                entry.getValue().asText());
     }
-
 }

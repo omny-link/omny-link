@@ -26,5 +26,4 @@ public class CsvUtils {
             return "\"" + text.trim() + "\"";
         }
     }
-
 }

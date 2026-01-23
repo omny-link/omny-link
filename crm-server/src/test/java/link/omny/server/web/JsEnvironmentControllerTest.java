@@ -35,7 +35,8 @@ import link.omny.server.Application;
  * @author Tim Stephenson
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = Application.class)
+@SpringBootTest(classes = Application.class, properties = {
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
 @WebAppConfiguration
 public class JsEnvironmentControllerTest {
 
@@ -51,5 +52,4 @@ public class JsEnvironmentControllerTest {
         assertTrue(js.contains("server:"));
         assertTrue(js.contains("tagLine:"));
     }
-
 }

@@ -23,11 +23,10 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class ElTemplateFillerTest {
 
@@ -40,7 +39,8 @@ public class ElTemplateFillerTest {
             + "${dateFormatter.toString(now,'dd-MMM-yyyy HH:mm')}, "
             + "we'll get back to you shortly.%2$s%3$s"
             + "Best,${owner.findPath('firstName').textValue()}%4$s"
-            + "tel:${owner.findPath('phoneNumbers').get( (0).intValue() ).textValue()}", CRLF, CRLF, CRLF, CRLF);
+            + "tel:${owner.findPath('phoneNumbers').get( (0).intValue() ).textValue()}",
+            CRLF, CRLF, CRLF, CRLF);
 
     private static ObjectMapper objectMapper;
 
@@ -56,12 +56,14 @@ public class ElTemplateFillerTest {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("contact", "Jill");
         params.put("owner", getAccountManager());
-        String result = svc.evaluateTemplate(template, params).replaceAll(CRLF, "");
-        System.out.println("Result was: "+result);
+        String result = svc.evaluateTemplate(template, params).replaceAll(CRLF,
+                "");
+        System.out.println("Result was: " + result);
         // replace ${contact}
         assertTrue(result.contains("Hi Jill"));
         // replace with formatted date time
-        assertTrue(result.matches(".*at \\d{2}-[a-zA-Z]{3,4}-\\d{4} \\d{2}:\\d{2}.*"));
+        assertTrue(result
+                .matches(".*at \\d{2}-[a-zA-Z]{3,4}-\\d{4} \\d{2}:\\d{2}.*"));
         // replace with owner.firstName
         assertTrue(result.contains("Best,Jack"));
         // replace with owner's first phone number
@@ -80,9 +82,8 @@ public class ElTemplateFillerTest {
     }
 
     private JsonNode getAccountManager()
-            throws JsonMappingException, JsonProcessingException {
-        String personJsonData = "{"
-                + "  \"firstName\": \"Jack\", "
+            throws DatabindException, JacksonException {
+        String personJsonData = "{" + "  \"firstName\": \"Jack\", "
                 + "  \"phoneNumbers\": [\"011-111-1111\", \"11-111-1111\"] "
                 + "}";
 
