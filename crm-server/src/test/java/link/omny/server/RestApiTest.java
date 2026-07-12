@@ -36,13 +36,17 @@ import org.junit.jupiter.api.Timeout;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
+import link.omny.server.config.TestSecurityConfig;
 import link.omny.server.web.JsEnvironmentController;
 
 @SpringBootTest(classes = Application.class, webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false" })
+    "springdoc.api-docs.enabled=false", "springdoc.swagger-ui.enabled=false",
+    "spring.profiles.active=test" })
+@Import(TestSecurityConfig.class)
 public class RestApiTest {
 
     @LocalServerPort
@@ -55,7 +59,8 @@ public class RestApiTest {
 
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    @Disabled
+    // hits 404 POSTing to missing /acme/accounts/1/activities/
+    @Disabled("Fails due to HAL format issues - API not returning _links/_embedded properly")
     public void testAccountApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -71,7 +76,7 @@ public class RestApiTest {
 
     @Test
     @Timeout(value = 5, unit = TimeUnit.SECONDS)
-    @Disabled
+    @Disabled("Fails due to HAL format issues - API not returning _links/_embedded properly")
     public void testContactApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(
@@ -119,7 +124,7 @@ public class RestApiTest {
 
     @Test
     @Timeout(value = 3, unit = TimeUnit.SECONDS)
-    @Disabled
+    @Disabled("Fails due to HAL format issues - API not returning _links/_embedded properly")
     public void testOrderApi() throws IOException {
         long start = System.currentTimeMillis();
         StringBuilder sb = createScript(

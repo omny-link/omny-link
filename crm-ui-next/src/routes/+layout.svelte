@@ -14,6 +14,8 @@
   let sidebarCollapsed: boolean = false;
   let sidebar: any;
   let colorScheme: 'light' | 'dark' = 'dark';
+  let loading: boolean = true;
+  let error: string | null = null;
 
   function toggleSidebar(): void {
     if (sidebar) {
@@ -47,9 +49,15 @@
 
       // Globally fetch user account and load tenant config
       if (keycloak.authenticated) {
-        const { tenant } = await fetchUserAccount();
-        await tenantConfigStore.load(tenant);
+        try {
+          const { tenant } = await fetchUserAccount();
+          await tenantConfigStore.load(tenant);
+        } catch (err) {
+          console.warn('Failed to load tenant config, using defaults:', err);
+        }
       }
+      
+      loading = false;
       
       // Signal that app is fully ready (after tenant config loaded)
       setTimeout(() => {
@@ -57,23 +65,48 @@
       }, 100);
     } catch (err) {
       console.error('Keycloak init error:', err);
+      error = 'Failed to initialize authentication. Please refresh the page.';
+      loading = false;
+      
       // Still signal ready even on error so user isn't stuck
       window.dispatchEvent(new CustomEvent('app:ready'));
     }
   });
 </script>
 
-<Sidebar 
-  bind:this={sidebar}
-  bind:collapsed={sidebarCollapsed}
-  {authenticated}
-  {username}
-  {userEmail}
-/>
+{#if loading}
+  <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="text-center">
+      <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-muted">Initializing application...</p>
+    </div>
+  </div>
+{:else if error}
+  <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">Authentication Error</h4>
+      <p>{error}</p>
+      <hr>
+      <button class="btn btn-primary" on:click={() => window.location.reload()}>
+        Reload Page
+      </button>
+    </div>
+  </div>
+{:else}
+  <Sidebar 
+    bind:this={sidebar}
+    bind:collapsed={sidebarCollapsed}
+    {authenticated}
+    {username}
+    {userEmail}
+  />
 
-<main id="content" class="{sidebarCollapsed ? 'sidebar-collapsed' : ''} container mt-4 {colorScheme === 'dark' ? 'text-light bg-dark' : 'text-dark bg-light'} p-4 rounded">
-  <slot />
-</main>
+  <main id="content" class="{sidebarCollapsed ? 'sidebar-collapsed' : ''} container mt-4 {colorScheme === 'dark' ? 'text-light bg-dark' : 'text-dark bg-light'} p-4 rounded">
+    <slot />
+  </main>
+{/if}
 
 
 <style>

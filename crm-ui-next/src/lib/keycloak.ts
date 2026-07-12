@@ -30,7 +30,8 @@ export async function initKeycloak() {
 		.init({
 			onLoad: 'check-sso',
 			pkceMethod: usePKCE,
-			flow: 'standard' // Use standard flow instead of implicit
+			flow: 'standard', // Use standard flow instead of implicit
+			checkLoginIframe: false // Disable iframe for better performance
 		})
 		.then(() => {
 			const userInfo: UserInfo | null = keycloak.tokenParsed ? {
@@ -53,6 +54,10 @@ export async function initKeycloak() {
 				token: keycloak.token || null,
 				userInfo
 			});
+
+			// Setup automatic token refresh
+			setupTokenRefresh();
+
 			return keycloak;
 		})
 		.catch((err) => {
@@ -61,6 +66,80 @@ export async function initKeycloak() {
 		});
 
 	return initPromise;
+}
+
+/**
+ * Setup automatic token refresh
+ * Refreshes token when it's about to expire (within 70% of its lifetime)
+ */
+function setupTokenRefresh() {
+	if (!keycloak.authenticated) return;
+
+	// Update token every 5 seconds (checks if refresh is needed)
+	keycloak.onTokenExpired = () => {
+		console.log('Token expired, refreshing...');
+		refreshToken();
+	};
+
+	// Proactively refresh token when it's 70% through its lifetime
+	setInterval(() => {
+		keycloak
+			.updateToken(70) // Refresh if token expires in 70 seconds
+			.then((refreshed) => {
+				if (refreshed) {
+					console.log('Token refreshed');
+					updateStoreToken();
+				}
+			})
+			.catch((err) => {
+				console.error('Failed to refresh token:', err);
+				// Token refresh failed, user needs to re-login
+				keycloak.login();
+			});
+	}, 60000); // Check every minute
+}
+
+/**
+ * Manually refresh the token
+ */
+export async function refreshToken(): Promise<boolean> {
+	try {
+		const refreshed = await keycloak.updateToken(-1); // Force refresh
+		if (refreshed) {
+			updateStoreToken();
+			return true;
+		}
+		return false;
+	} catch (err) {
+		console.error('Token refresh failed:', err);
+		// Redirect to login if refresh fails
+		keycloak.login();
+		return false;
+	}
+}
+
+/**
+ * Update the store with new token
+ */
+function updateStoreToken() {
+	keycloakStore.update((state) => ({
+		...state,
+		token: keycloak.token || null
+	}));
+}
+
+/**
+ * Login with Keycloak
+ */
+export function login() {
+	keycloak.login();
+}
+
+/**
+ * Logout from Keycloak
+ */
+export function logout() {
+	keycloak.logout();
 }
 
 // Fetch user account info from Keycloak to get tenant

@@ -3,7 +3,7 @@ Customer Relationship Management System
 
 A customer relationship management (CRM) system and product catalogue.
 
-Built on [Spring Boot](https://projects.spring.io/spring-boot/) as a series of micro-service REST APIs.
+Built on [Spring Boot 4.0](https://projects.spring.io/spring-boot/) (Java 21) as a series of micro-service REST APIs with JWT authentication via [Keycloak](https://www.keycloak.org/).
 
 Web user interface built on top of the API as a series of [Ractive](https://ractive.js.org) single page applications supporting a wide range of branding and customisation via a per-tenant configuration file.
 
@@ -11,6 +11,9 @@ Documentation
 -------------
 - [User / Configuration Guide](https://omnylink.github.io/index.html)
 - [Dev-Ops Guide](https://omnylink.github.io/devops.html)
+- [JWT Authentication Guide](docs/JWT-AUTHENTICATION.md) - **New!** Setup and usage guide
+- [JWT Implementation Plan](docs/JWT-IMPLEMENTATION-PLAN.md) - **New!** Complete implementation details
+- [Spring Boot 4 Migration](MIGRATION-SPRING-BOOT-4.md) - Migration notes
 
 License
 -------

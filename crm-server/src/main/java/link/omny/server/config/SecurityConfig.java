@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,6 +44,7 @@ import link.omny.server.security.KeycloakJwtAuthenticationConverter;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@Profile("!test")
 public class SecurityConfig {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(SecurityConfig.class);
@@ -56,6 +58,8 @@ public class SecurityConfig {
         LOGGER.info("Configuring Spring Security with JWT authentication");
 
         http
+                // Enable CORS (must be configured before other filters)
+                .cors(cors -> cors.configure(http))
                 // Use lambda DSL (Spring Security 7.0 requirement)
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints - no authentication required

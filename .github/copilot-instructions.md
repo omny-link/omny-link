@@ -6,8 +6,8 @@ This is a Java-based CRM backend system with multiple Spring Boot modules provid
 
 ## Technology Stack
 
-- **Framework**: Spring Boot 3.x
-- **Language**: Java 17+
+- **Framework**: Spring Boot 4.x
+- **Language**: Java 21+
 - **Build Tool**: Maven
 - **Security**: Spring Security with Keycloak OAuth2/JWT
 - **Database**: JPA/Hibernate with relational database
@@ -21,7 +21,7 @@ This is a Java-based CRM backend system with multiple Spring Boot modules provid
 - Follow Java naming conventions (camelCase for methods/variables, PascalCase for classes)
 - Use meaningful, descriptive variable and method names
 - Keep methods short and focused (single responsibility principle)
-- Use Java 17+ features: records, pattern matching, text blocks, sealed classes
+- Use Java 21+ features: records, pattern matching, text blocks, sealed classes
 - Prefer immutability where possible (final fields, unmodifiable collections)
 - Use Lombok annotations to reduce boilerplate (`@Data`, `@Builder`, `@RequiredArgsConstructor`)
 
