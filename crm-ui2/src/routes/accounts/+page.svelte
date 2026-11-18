@@ -7,12 +7,13 @@
   let loading = false;
   let page = 1;
   let allLoaded = false;
+  const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8082').replace(/\/$/, '');
 
   // Stale-while-refresh: show what we have, keep loading in background
   async function fetchAccounts(nextPage) {
     if (loading || allLoaded) return;
     loading = true;
-    const url = `http://localhost:8082/acme/accounts/?page=${nextPage}`;
+    const url = `${apiBaseUrl}/acme/accounts/?page=${nextPage}`;
     const headers = {
       'Access-Control-Allow-Origin':'*'
     }

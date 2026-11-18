@@ -1,17 +1,18 @@
-# sv
+# CRM UI2
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A proof of concept using modern tools and libraries (Svelte).
 
-## Creating a project
+## Configuring backend
 
-If you're seeing this, you've probably already done this step. Congrats!
+This UI reads the backend base URL from `VITE_API_BASE_URL`.
+
+1. Copy `.env.example` to `.env`.
+2. Set the backend URL you want to use.
+
+Example for hosted backend:
 
 ```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
+VITE_API_BASE_URL=https://crm.knowprocess.com
 ```
 
 ## Developing
