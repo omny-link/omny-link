@@ -44,3 +44,4 @@ omny-link-server/*jrxml.html
 
 .vscode
 .rewrite-cache/
+.github/modernize
