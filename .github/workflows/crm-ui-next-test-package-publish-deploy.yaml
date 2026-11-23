@@ -2,7 +2,7 @@ name: Test, package, publish and deploy CRM UI Next
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - .github/workflows/crm-ui-next-*
       - "crm-ui-next/**"
@@ -67,7 +67,7 @@ jobs:
           path: crm-ui-next/${{ steps.pkg.outputs.name }}-${{ steps.pkg.outputs.version }}.zip
 
       - name: Deploy
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/main'
         uses: nogsantos/scp-deploy@48b9ca0b1adcb229b1568eebda8e16e06436495a # v1.3.0
         with:
           src: ./crm-ui-next/build/*
