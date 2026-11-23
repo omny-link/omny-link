@@ -2,7 +2,13 @@ name: Maven Build
 
 on:
   push:
+    paths-ignore:
+      - .github/workflows/crm-ui-next-*
+      - "crm-ui-next/**"
   pull_request:
+    paths-ignore:
+      - .github/workflows/crm-ui-next-*
+      - "crm-ui-next/**"
 
 jobs:
   build:
